@@ -20,10 +20,12 @@ const TICKERS = [
 async function fetchTickerData(yahooTicker) {
   const historyUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=10y&interval=1mo&includePrePost=false`;
   const dailyUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=2d&interval=1d&includePrePost=false`;
+  const dailyHistoryUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=10y&interval=1d&includePrePost=false`;
 
-  const [historyRes, dailyRes] = await Promise.all([
+  const [historyRes, dailyRes, dailyHistoryRes] = await Promise.all([
     fetch(historyUrl),
     fetch(dailyUrl).catch(() => null),
+    fetch(dailyHistoryUrl).catch(() => null),
   ]);
 
   if (!historyRes.ok) {
@@ -32,6 +34,7 @@ async function fetchTickerData(yahooTicker) {
 
   const data = await historyRes.json();
   const dailyData = dailyRes && dailyRes.ok ? await dailyRes.json() : null;
+  const dailyHistoryData = dailyHistoryRes && dailyHistoryRes.ok ? await dailyHistoryRes.json() : null;
 
   if (!data.chart || !data.chart.result || !data.chart.result[0]) {
     throw new Error(`Invalid data format for ${yahooTicker}`);
@@ -75,6 +78,24 @@ async function fetchTickerData(yahooTicker) {
     }
   }
 
+  // Build daily data for EMA calculations
+  let dailyDataArr = [];
+  if (dailyHistoryData && dailyHistoryData.chart && dailyHistoryData.chart.result && dailyHistoryData.chart.result[0]) {
+    const dResult = dailyHistoryData.chart.result[0];
+    const dQuotes = dResult.indicators.quote[0];
+    const dTimestamps = dResult.timestamp;
+    for (let i = 0; i < dTimestamps.length; i++) {
+      if (dQuotes.close[i] !== null) {
+        const d = new Date(dTimestamps[i] * 1000);
+        const dateStr = d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+        dailyDataArr.push({
+          date: dateStr,
+          price: Math.round(dQuotes.close[i] * 100) / 100,
+        });
+      }
+    }
+  }
+
   return {
     name: meta.shortName || meta.symbol,
     currentPrice,
@@ -82,6 +103,7 @@ async function fetchTickerData(yahooTicker) {
     percentChange,
     currency: meta.currency || 'USD',
     monthlyData,
+    dailyData: dailyDataArr,
   };
 }
 
@@ -93,7 +115,8 @@ async function main() {
     try {
       console.log(`Fetching ${ticker.symbol} (${ticker.yahoo})...`);
       result.tickers[ticker.yahoo] = await fetchTickerData(ticker.yahoo);
-      console.log(`  OK - ${result.tickers[ticker.yahoo].monthlyData.length} monthly data points`);
+      const td = result.tickers[ticker.yahoo];
+      console.log(`  OK - ${td.monthlyData.length} monthly, ${td.dailyData.length} daily data points`);
     } catch (err) {
       console.error(`  FAILED: ${err.message}`);
       failures++;
@@ -101,7 +124,7 @@ async function main() {
   }
 
   const outPath = path.join(__dirname, '..', 'data.json');
-  fs.writeFileSync(outPath, JSON.stringify(result, null, 2));
+  fs.writeFileSync(outPath, JSON.stringify(result));
   console.log(`\nWrote ${outPath}`);
   console.log(`${TICKERS.length - failures}/${TICKERS.length} tickers fetched successfully.`);
 
