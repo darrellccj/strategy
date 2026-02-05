@@ -42,17 +42,26 @@ async function fetchTickerData(yahooTicker) {
   const quotes = result.indicators.quote[0];
   const timestamps = result.timestamp;
 
-  const monthlyData = [];
+  // Build monthly data, keeping only one entry per calendar month (latest wins)
+  const monthlyMap = new Map();
   for (let i = 0; i < timestamps.length; i++) {
     if (quotes.close[i] !== null) {
-      monthlyData.push({
-        date: new Date(timestamps[i] * 1000).toISOString(),
+      const d = new Date(timestamps[i] * 1000);
+      const key = d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
+      monthlyMap.set(key, {
+        date: d.toISOString(),
         price: Math.round(quotes.close[i] * 100) / 100,
       });
     }
   }
 
   const currentPrice = meta.regularMarketPrice;
+
+  // Replace the last entry's price with the live current price
+  const monthlyData = Array.from(monthlyMap.values());
+  if (monthlyData.length > 0) {
+    monthlyData[monthlyData.length - 1].price = Math.round(currentPrice * 100) / 100;
+  }
 
   let priceChange = 0;
   let percentChange = 0;
