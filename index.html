@@ -543,14 +543,14 @@
         </div>
 
         <div class="result-item">
-          <div class="result-label">Total Return</div>
-          <div class="result-value positive" id="gain-loss">+125%</div>
+          <div class="result-label">Max Drawdown</div>
+          <div class="result-value negative" id="max-drawdown">-0%</div>
         </div>
 
         <div class="result-item full-width">
           <div class="result-label">Value Today</div>
           <div class="result-value" id="final-value">$270,000</div>
-          <div class="result-subtext" id="profit-text">Profit: $150,000</div>
+          <div class="result-subtext" id="profit-text">Profit: $150,000 <span id="gain-loss"></span></div>
         </div>
 
         <div class="result-item full-width">
@@ -768,6 +768,15 @@
       const returnPercent = ((finalValue - totalInvested) / totalInvested) * 100;
       const avgCostPerShare = totalInvested / totalShares;
 
+      // Max drawdown from peak portfolio value
+      let peak = 0;
+      let maxDrawdown = 0;
+      for (const pv of portfolioValues) {
+        if (pv.value > peak) peak = pv.value;
+        const drawdown = (pv.value - peak) / peak;
+        if (drawdown < maxDrawdown) maxDrawdown = drawdown;
+      }
+
       return {
         totalInvested,
         finalValue,
@@ -775,6 +784,7 @@
         returnPercent,
         totalShares,
         avgCostPerShare,
+        maxDrawdown: maxDrawdown * 100,
         portfolioValues,
         investedValues
       };
@@ -810,6 +820,15 @@
       const profit = finalValue - amount;
       const returnPercent = ((finalValue - amount) / amount) * 100;
 
+      // Max drawdown from peak portfolio value
+      let peak = 0;
+      let maxDrawdown = 0;
+      for (const pv of portfolioValues) {
+        if (pv.value > peak) peak = pv.value;
+        const drawdown = (pv.value - peak) / peak;
+        if (drawdown < maxDrawdown) maxDrawdown = drawdown;
+      }
+
       return {
         totalInvested: amount,
         finalValue,
@@ -817,6 +836,7 @@
         returnPercent,
         totalShares: shares,
         avgCostPerShare: buyPrice,
+        maxDrawdown: maxDrawdown * 100,
         portfolioValues,
         investedValues
       };
@@ -859,9 +879,10 @@
       if (!results) {
         document.getElementById('total-contributed').textContent = 'No data';
         document.getElementById('final-value').textContent = 'No data';
-        document.getElementById('gain-loss').textContent = '-';
+        document.getElementById('gain-loss').textContent = '';
+        document.getElementById('max-drawdown').textContent = '-';
         document.getElementById('shares-owned').textContent = '-';
-        document.getElementById('profit-text').textContent = '';
+        document.getElementById('profit-text').innerHTML = '';
         document.getElementById('avg-cost-text').textContent = '';
         drawChart(null);
         return;
@@ -873,14 +894,17 @@
       // Final value
       document.getElementById('final-value').textContent = formatCurrency(results.finalValue);
 
-      // Profit text
+      // Profit text with return %
       const profitSign = results.profit >= 0 ? '+' : '';
-      document.getElementById('profit-text').textContent = `Profit: ${profitSign}${formatCurrency(results.profit)}`;
-
-      // Gain/loss percentage
       const gainLossEl = document.getElementById('gain-loss');
-      gainLossEl.textContent = formatPercent(results.returnPercent);
-      gainLossEl.className = 'result-value ' + (results.returnPercent >= 0 ? 'positive' : 'negative');
+      gainLossEl.textContent = `(${formatPercent(results.returnPercent)})`;
+      gainLossEl.className = results.returnPercent >= 0 ? 'positive' : 'negative';
+      document.getElementById('profit-text').innerHTML = `Profit: ${profitSign}${formatCurrency(results.profit)} <span id="gain-loss" class="${results.returnPercent >= 0 ? 'positive' : 'negative'}">(${formatPercent(results.returnPercent)})</span>`;
+
+      // Max drawdown
+      const drawdownEl = document.getElementById('max-drawdown');
+      drawdownEl.textContent = results.maxDrawdown.toFixed(1) + '%';
+      drawdownEl.className = 'result-value negative';
 
       // Shares owned
       document.getElementById('shares-owned').textContent = results.totalShares.toFixed(4);
