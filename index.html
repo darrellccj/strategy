@@ -56,64 +56,74 @@
       margin-bottom: 10px;
     }
 
-    /* Ticker Buttons */
-    .ticker-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+    /* Ticker Search */
+    .ticker-search-wrapper {
+      position: relative;
     }
 
-    .ticker-btn {
-      flex: 1;
-      min-width: calc(50% - 5px);
-      padding: 12px 16px;
+    .ticker-search {
+      width: 100%;
+      padding: 14px 16px;
       border: 2px solid #e5e0d5;
-      background: #faf8f5;
       border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #6b5f4d;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      font-size: 1.1rem;
+      color: #3d3929;
+      background: #faf8f5;
+      font-family: inherit;
+      transition: border-color 0.2s ease;
     }
 
-    .ticker-btn:hover {
-      border-color: #c9bda8;
-    }
-
-    .ticker-btn.active {
+    .ticker-search:focus {
+      outline: none;
       border-color: #a08c6d;
-      background: #f0ebe2;
-      color: #5c5340;
     }
 
-    /* Risk Level Buttons */
-    .risk-buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    .risk-btn {
-      flex: 1;
-      padding: 12px 16px;
+    .ticker-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #ffffff;
       border: 2px solid #e5e0d5;
-      background: #faf8f5;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #6b5f4d;
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      max-height: 240px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(92, 83, 64, 0.12);
+    }
+
+    .ticker-dropdown.open {
+      display: block;
+    }
+
+    .ticker-option {
+      padding: 12px 16px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.15s ease;
     }
 
-    .risk-btn:hover {
-      border-color: #c9bda8;
-    }
-
-    .risk-btn.active {
-      border-color: #a08c6d;
+    .ticker-option:hover {
       background: #f0ebe2;
+    }
+
+    .ticker-option .ticker-symbol {
+      font-weight: 600;
       color: #5c5340;
+      font-size: 1rem;
+    }
+
+    .ticker-option .ticker-name {
+      font-size: 0.85rem;
+      color: #9a8d79;
+    }
+
+    .ticker-search.has-focus {
+      border-radius: 10px 10px 0 0;
     }
 
     /* Contribution Style Toggle */
@@ -135,6 +145,7 @@
       color: #6b5f4d;
       cursor: pointer;
       transition: all 0.2s ease;
+      font-family: inherit;
     }
 
     .toggle-btn.active {
@@ -166,6 +177,7 @@
       font-size: 1.1rem;
       color: #3d3929;
       background: #faf8f5;
+      font-family: inherit;
       transition: border-color 0.2s ease;
     }
 
@@ -284,39 +296,6 @@
       margin-top: 4px;
     }
 
-    .result-range {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 8px;
-      font-size: 0.85rem;
-    }
-
-    .range-item {
-      text-align: center;
-    }
-
-    .range-label {
-      font-size: 0.7rem;
-      color: #9a8d79;
-      margin-bottom: 2px;
-    }
-
-    .range-value {
-      font-weight: 500;
-    }
-
-    .range-value.worst {
-      color: #8b5a5a;
-    }
-
-    .range-value.typical {
-      color: #5c5340;
-    }
-
-    .range-value.best {
-      color: #5a7a5a;
-    }
-
     /* Chart */
     .chart-container {
       background: #ffffff;
@@ -356,9 +335,7 @@
       border-radius: 50%;
     }
 
-    .legend-dot.worst { background: #c49a9a; }
     .legend-dot.typical { background: #a08c6d; }
-    .legend-dot.best { background: #8aab8a; }
 
     /* Loading state */
     .loading {
@@ -412,10 +389,6 @@
         font-size: 1.5rem;
       }
 
-      .risk-buttons {
-        flex-direction: column;
-      }
-
       .results-grid {
         grid-template-columns: 1fr;
       }
@@ -465,17 +438,6 @@
         font-size: 0.95rem;
       }
 
-      .ticker-buttons {
-        flex-wrap: nowrap;
-      }
-
-      .ticker-btn {
-        min-width: auto;
-        padding: 14px 20px;
-        font-size: 1rem;
-      }
-
-      .risk-btn,
       .toggle-btn {
         padding: 14px 20px;
         font-size: 1rem;
@@ -532,12 +494,10 @@
     <div class="main-layout">
     <div class="card">
       <div class="input-group">
-        <label>Select a Stock</label>
-        <div class="ticker-buttons">
-          <button class="ticker-btn" data-ticker="GOOGL">GOOGL</button>
-          <button class="ticker-btn active" data-ticker="MSFT">MSFT</button>
-          <button class="ticker-btn" data-ticker="NVDA">NVDA</button>
-          <button class="ticker-btn" data-ticker="PLTR">PLTR</button>
+        <label>Search for a Stock</label>
+        <div class="ticker-search-wrapper">
+          <input type="text" class="ticker-search" id="ticker-search" placeholder="Type to search (e.g. AAPL, BTC)" autocomplete="off">
+          <div class="ticker-dropdown" id="ticker-dropdown"></div>
         </div>
         <div class="stock-info" id="stock-info">
           <span class="stock-price" id="stock-price">Loading...</span>
@@ -620,9 +580,27 @@
   </div>
 
   <script>
+    // Available tickers
+    const TICKERS = [
+      { symbol: 'AAPL', yahoo: 'AAPL', name: 'Apple' },
+      { symbol: 'MSFT', yahoo: 'MSFT', name: 'Microsoft' },
+      { symbol: 'GOOGL', yahoo: 'GOOGL', name: 'Alphabet (Google)' },
+      { symbol: 'AMZN', yahoo: 'AMZN', name: 'Amazon' },
+      { symbol: 'META', yahoo: 'META', name: 'Meta Platforms' },
+      { symbol: 'NVDA', yahoo: 'NVDA', name: 'Nvidia' },
+      { symbol: 'TSLA', yahoo: 'TSLA', name: 'Tesla' },
+      { symbol: 'GLD', yahoo: 'GLD', name: 'SPDR Gold Trust' },
+      { symbol: 'SLV', yahoo: 'SLV', name: 'iShares Silver Trust' },
+      { symbol: 'VOO', yahoo: 'VOO', name: 'Vanguard S&P 500 ETF' },
+      { symbol: 'SPY', yahoo: 'SPY', name: 'SPDR S&P 500 ETF' },
+      { symbol: 'BTC', yahoo: 'BTC-USD', name: 'Bitcoin' },
+      { symbol: 'ETH', yahoo: 'ETH-USD', name: 'Ethereum' },
+    ];
+
     // State
     let state = {
-      ticker: 'MSFT',
+      ticker: 'VOO',
+      yahooTicker: 'VOO',
       style: 'dca',
       amount: 500,
       years: 5,
@@ -633,7 +611,8 @@
     const dataCache = {};
 
     // DOM Elements
-    const tickerBtns = document.querySelectorAll('.ticker-btn');
+    const tickerSearch = document.getElementById('ticker-search');
+    const tickerDropdown = document.getElementById('ticker-dropdown');
     const styleBtns = document.querySelectorAll('.toggle-btn');
     const amountInput = document.getElementById('amount');
     const amountLabel = document.getElementById('amount-label');
@@ -658,20 +637,39 @@
       return sign + value.toFixed(1) + '%';
     }
 
+    // CORS proxies to try in order
+    const CORS_PROXIES = [
+      (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    ];
+
+    // Fetch with CORS proxy fallback
+    async function fetchWithProxy(url) {
+      for (const proxyFn of CORS_PROXIES) {
+        try {
+          const proxyUrl = proxyFn(url);
+          const response = await fetch(proxyUrl);
+          if (response.ok) {
+            return await response.json();
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+      throw new Error('All proxies failed');
+    }
+
     // Fetch stock data from Yahoo Finance
-    async function fetchStockData(ticker) {
+    async function fetchStockData(yahooTicker) {
       // Check cache first
-      if (dataCache[ticker]) {
-        return dataCache[ticker];
+      if (dataCache[yahooTicker]) {
+        return dataCache[yahooTicker];
       }
 
-      // Yahoo Finance API via CORS proxy
-      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?range=10y&interval=1mo&includePrePost=false`;
-      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=10y&interval=1mo&includePrePost=false`;
 
       try {
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
+        const data = await fetchWithProxy(url);
 
         if (data.chart && data.chart.result && data.chart.result[0]) {
           const result = data.chart.result[0];
@@ -697,7 +695,7 @@
           const percentChange = (priceChange / previousClose) * 100;
 
           const tickerData = {
-            ticker,
+            ticker: yahooTicker,
             name: meta.shortName || meta.symbol,
             currentPrice,
             priceChange,
@@ -707,14 +705,14 @@
           };
 
           // Cache the data
-          dataCache[ticker] = tickerData;
+          dataCache[yahooTicker] = tickerData;
           return tickerData;
         }
 
         throw new Error('Invalid data format');
       } catch (error) {
         console.error('Error fetching stock data:', error);
-        return getFallbackData(ticker);
+        return getFallbackData(yahooTicker);
       }
     }
 
@@ -723,7 +721,7 @@
       return {
         ticker,
         name: ticker,
-        currentPrice: 100,
+        currentPrice: 0,
         priceChange: 0,
         percentChange: 0,
         monthlyData: [],
@@ -842,12 +840,13 @@
       if (!state.tickerData) return;
 
       const data = state.tickerData;
-      stockPriceEl.textContent = `$${data.currentPrice.toFixed(2)}`;
 
       if (data.isFallback) {
-        stockChangeEl.textContent = '(offline - no data)';
+        stockPriceEl.textContent = 'No data';
+        stockChangeEl.textContent = '(could not load)';
         stockChangeEl.className = 'stock-change';
       } else {
+        stockPriceEl.textContent = `$${data.currentPrice.toFixed(2)}`;
         const sign = data.priceChange >= 0 ? '+' : '';
         stockChangeEl.textContent = `${sign}$${data.priceChange.toFixed(2)} (${sign}${data.percentChange.toFixed(2)}%)`;
         stockChangeEl.className = `stock-change ${data.priceChange >= 0 ? 'positive' : 'negative'}`;
@@ -864,6 +863,7 @@
         document.getElementById('shares-owned').textContent = '-';
         document.getElementById('profit-text').textContent = '';
         document.getElementById('avg-cost-text').textContent = '';
+        drawChart(null);
         return;
       }
 
@@ -1025,28 +1025,85 @@
     }
 
     // Load ticker data and update UI
-    async function loadTicker(ticker) {
+    async function loadTicker(symbol, yahooTicker) {
       resultsCard.classList.add('loading');
       stockPriceEl.textContent = 'Loading...';
       stockChangeEl.textContent = '';
 
-      state.ticker = ticker;
-      state.tickerData = await fetchStockData(ticker);
+      state.ticker = symbol;
+      state.yahooTicker = yahooTicker;
+      state.tickerData = await fetchStockData(yahooTicker);
 
       updateStockInfo();
       updateResults();
       resultsCard.classList.remove('loading');
     }
 
-    // Event listeners
-    tickerBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tickerBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        loadTicker(btn.dataset.ticker);
+    // --- Ticker search dropdown ---
+    function renderDropdown(filter) {
+      const query = filter.toLowerCase();
+      const matches = TICKERS.filter(t =>
+        t.symbol.toLowerCase().includes(query) ||
+        t.name.toLowerCase().includes(query)
+      );
+
+      tickerDropdown.innerHTML = '';
+      matches.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'ticker-option';
+        div.innerHTML = `<span class="ticker-symbol">${t.symbol}</span><span class="ticker-name">${t.name}</span>`;
+        div.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          selectTicker(t);
+        });
+        tickerDropdown.appendChild(div);
       });
+
+      if (matches.length > 0) {
+        tickerDropdown.classList.add('open');
+        tickerSearch.classList.add('has-focus');
+      } else {
+        tickerDropdown.classList.remove('open');
+        tickerSearch.classList.remove('has-focus');
+      }
+    }
+
+    function selectTicker(t) {
+      tickerSearch.value = `${t.symbol} - ${t.name}`;
+      tickerDropdown.classList.remove('open');
+      tickerSearch.classList.remove('has-focus');
+      tickerSearch.blur();
+      loadTicker(t.symbol, t.yahoo);
+    }
+
+    tickerSearch.addEventListener('focus', () => {
+      tickerSearch.value = '';
+      renderDropdown('');
     });
 
+    tickerSearch.addEventListener('input', () => {
+      renderDropdown(tickerSearch.value);
+    });
+
+    tickerSearch.addEventListener('blur', () => {
+      tickerDropdown.classList.remove('open');
+      tickerSearch.classList.remove('has-focus');
+      // Restore display value
+      const current = TICKERS.find(t => t.symbol === state.ticker);
+      if (current) {
+        tickerSearch.value = `${current.symbol} - ${current.name}`;
+      }
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.ticker-search-wrapper')) {
+        tickerDropdown.classList.remove('open');
+        tickerSearch.classList.remove('has-focus');
+      }
+    });
+
+    // --- Other event listeners ---
     styleBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         styleBtns.forEach(b => b.classList.remove('active'));
@@ -1095,7 +1152,9 @@
     window.addEventListener('resize', updateResults);
 
     // Initial load
-    loadTicker('MSFT');
+    const defaultTicker = TICKERS.find(t => t.symbol === 'VOO');
+    tickerSearch.value = `${defaultTicker.symbol} - ${defaultTicker.name}`;
+    loadTicker(defaultTicker.symbol, defaultTicker.yahoo);
   </script>
 </body>
 </html>
