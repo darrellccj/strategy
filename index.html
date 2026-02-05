@@ -610,6 +610,39 @@
     // Cache for ticker data
     const dataCache = {};
 
+    // Pre-fetched data from data.json (populated on first fetchStockData call)
+    let bundledDataLoaded = false;
+    let bundledDataPromise = null;
+
+    async function loadBundledData() {
+      try {
+        const res = await fetch('data.json');
+        if (!res.ok) throw new Error('data.json not found');
+        const json = await res.json();
+        if (json.tickers) {
+          for (const [yahooTicker, tickerData] of Object.entries(json.tickers)) {
+            // Convert date strings back to Date objects
+            const monthlyData = tickerData.monthlyData.map(d => ({
+              date: new Date(d.date),
+              price: d.price
+            }));
+            dataCache[yahooTicker] = {
+              ticker: yahooTicker,
+              name: tickerData.name,
+              currentPrice: tickerData.currentPrice,
+              priceChange: tickerData.priceChange,
+              percentChange: tickerData.percentChange,
+              currency: tickerData.currency || 'USD',
+              monthlyData
+            };
+          }
+        }
+      } catch (e) {
+        // data.json not available — will fall back to live API
+      }
+      bundledDataLoaded = true;
+    }
+
     // DOM Elements
     const tickerSearch = document.getElementById('ticker-search');
     const tickerDropdown = document.getElementById('ticker-dropdown');
@@ -661,7 +694,13 @@
 
     // Fetch stock data from Yahoo Finance
     async function fetchStockData(yahooTicker) {
-      // Check cache first
+      // Load bundled data on first call
+      if (!bundledDataLoaded) {
+        if (!bundledDataPromise) bundledDataPromise = loadBundledData();
+        await bundledDataPromise;
+      }
+
+      // Check cache (may have been populated from data.json)
       if (dataCache[yahooTicker]) {
         return dataCache[yahooTicker];
       }
