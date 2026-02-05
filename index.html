@@ -690,7 +690,7 @@
 
           // Current price info
           const currentPrice = meta.regularMarketPrice;
-          const previousClose = meta.chartPreviousClose || meta.previousClose;
+          const previousClose = meta.previousClose || meta.chartPreviousClose;
           const priceChange = currentPrice - previousClose;
           const percentChange = (priceChange / previousClose) * 100;
 
