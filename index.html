@@ -1069,6 +1069,7 @@
     }
 
     function selectTicker(t) {
+      state.ticker = t.symbol;
       tickerSearch.value = `${t.symbol} - ${t.name}`;
       tickerDropdown.classList.remove('open');
       tickerSearch.classList.remove('has-focus');
