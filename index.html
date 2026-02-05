@@ -550,7 +550,7 @@
         <div class="result-item full-width">
           <div class="result-label">Value Today</div>
           <div class="result-value" id="final-value">$270,000</div>
-          <div class="result-subtext" id="profit-text">Profit: $150,000 <span id="gain-loss"></span></div>
+          <div class="result-subtext" id="profit-text">Profit: $150,000</div>
         </div>
 
         <div class="result-item full-width">
@@ -895,7 +895,6 @@
       if (!results) {
         document.getElementById('total-contributed').textContent = 'No data';
         document.getElementById('final-value').textContent = 'No data';
-        document.getElementById('gain-loss').textContent = '';
         document.getElementById('max-drawdown').textContent = '-';
         document.getElementById('shares-owned').textContent = '-';
         document.getElementById('profit-text').innerHTML = '';
@@ -912,10 +911,8 @@
 
       // Profit text with return %
       const profitSign = results.profit >= 0 ? '+' : '';
-      const gainLossEl = document.getElementById('gain-loss');
-      gainLossEl.textContent = `(${formatPercent(results.returnPercent)})`;
-      gainLossEl.className = results.returnPercent >= 0 ? 'positive' : 'negative';
-      document.getElementById('profit-text').innerHTML = `Profit: ${profitSign}${formatCurrency(results.profit)} <span id="gain-loss" class="${results.returnPercent >= 0 ? 'positive' : 'negative'}">(${formatPercent(results.returnPercent)})</span>`;
+      const returnClass = results.returnPercent >= 0 ? 'positive' : 'negative';
+      document.getElementById('profit-text').innerHTML = `Profit: ${profitSign}${formatCurrency(results.profit)} <span class="${returnClass}">(${formatPercent(results.returnPercent)})</span>`;
 
       // Max drawdown
       const drawdownEl = document.getElementById('max-drawdown');
