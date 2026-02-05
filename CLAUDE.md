@@ -25,13 +25,13 @@ The application is organized into three layers within a single HTML file:
 
 2. **Logic (JavaScript)**:
    - State object tracks user selections (ticker, yahooTicker, investment style, amount, years)
-   - `backtestDCA()` - simulates monthly contributions over time
-   - `backtestLumpSum()` - simulates one-time investment
+   - `backtestDCA()` - simulates monthly contributions over time, calculates max drawdown
+   - `backtestLumpSum()` - simulates one-time investment, calculates max drawdown
    - `drawChart()` - renders historical portfolio value on canvas
 
 3. **Data Layer**:
    - `fetchWithProxy()` - tries multiple CORS proxies in order (allorigins.win, then corsproxy.io)
-   - `fetchStockData()` - retrieves 10 years of monthly close prices from Yahoo Finance
+   - `fetchStockData()` - makes two API calls per ticker: `range=10y&interval=1mo` for historical data, `range=2d&interval=1d` for accurate daily price change
    - In-memory `dataCache` prevents redundant API calls
    - Fallback data returned if all proxies fail
 
