@@ -666,10 +666,15 @@
         return dataCache[yahooTicker];
       }
 
-      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=10y&interval=1mo&includePrePost=false`;
+      const historyUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=10y&interval=1mo&includePrePost=false`;
+      const dailyUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=2d&interval=1d&includePrePost=false`;
 
       try {
-        const data = await fetchWithProxy(url);
+        // Fetch both in parallel
+        const [data, dailyData] = await Promise.all([
+          fetchWithProxy(historyUrl),
+          fetchWithProxy(dailyUrl).catch(() => null)
+        ]);
 
         if (data.chart && data.chart.result && data.chart.result[0]) {
           const result = data.chart.result[0];
@@ -688,26 +693,19 @@
             }
           }
 
-          // Current price from chart meta
           const currentPrice = meta.regularMarketPrice;
 
-          // Fetch daily data for accurate 1-day change
+          // Extract daily change from parallel fetch
           let priceChange = 0;
           let percentChange = 0;
-          try {
-            const dailyUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=2d&interval=1d&includePrePost=false`;
-            const dailyData = await fetchWithProxy(dailyUrl);
-            if (dailyData.chart && dailyData.chart.result && dailyData.chart.result[0]) {
-              const dailyQuotes = dailyData.chart.result[0].indicators.quote[0];
-              const closes = dailyQuotes.close.filter(c => c !== null);
-              if (closes.length >= 2) {
-                const prevClose = closes[closes.length - 2];
-                priceChange = currentPrice - prevClose;
-                percentChange = (priceChange / prevClose) * 100;
-              }
+          if (dailyData && dailyData.chart && dailyData.chart.result && dailyData.chart.result[0]) {
+            const dailyQuotes = dailyData.chart.result[0].indicators.quote[0];
+            const closes = dailyQuotes.close.filter(c => c !== null);
+            if (closes.length >= 2) {
+              const prevClose = closes[closes.length - 2];
+              priceChange = currentPrice - prevClose;
+              percentChange = (priceChange / prevClose) * 100;
             }
-          } catch (e) {
-            // Daily fetch failed, leave change as 0
           }
 
           const tickerData = {
