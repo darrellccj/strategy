@@ -154,6 +154,74 @@
       box-shadow: 0 2px 4px rgba(92, 83, 64, 0.1);
     }
 
+    /* EMA Dropdown (custom styled like ticker search) */
+    .ema-select-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .ema-select-btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #6b5f4d;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .ema-select-btn.active {
+      background: #ffffff;
+      color: #5c5340;
+      box-shadow: 0 2px 4px rgba(92, 83, 64, 0.1);
+    }
+
+    .ema-select-btn.open {
+      border-radius: 8px 8px 0 0;
+    }
+
+    .ema-select-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 2px solid #e5e0d5;
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      overflow: hidden;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(92, 83, 64, 0.12);
+    }
+
+    .ema-select-dropdown.open {
+      display: block;
+    }
+
+    .ema-option {
+      padding: 12px 16px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #5c5340;
+      transition: background 0.15s ease;
+    }
+
+    .ema-option:hover {
+      background: #f0ebe2;
+    }
+
+    .ema-option.selected {
+      background: #f0ebe2;
+      font-weight: 500;
+    }
+
     /* Amount Input */
     .amount-input-wrapper {
       position: relative;
@@ -680,9 +748,14 @@
         <div class="toggle-container">
           <button class="toggle-btn active" data-style="dca">Monthly</button>
           <button class="toggle-btn" data-style="lump">Lump Sum</button>
-          <button class="toggle-btn ema-btn" data-style="ema50" style="display:none">50 EMA</button>
-          <button class="toggle-btn ema-btn" data-style="ema100" style="display:none">100 EMA</button>
-          <button class="toggle-btn ema-btn" data-style="ema200" style="display:none">200 EMA</button>
+          <div class="ema-select-wrapper" id="ema-wrapper" style="display:none">
+            <button class="ema-select-btn" id="ema-select-btn">200 EMA</button>
+            <div class="ema-select-dropdown" id="ema-dropdown">
+              <div class="ema-option" data-value="ema50">50 EMA</div>
+              <div class="ema-option" data-value="ema100">100 EMA</div>
+              <div class="ema-option selected" data-value="ema200">200 EMA</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -840,17 +913,22 @@
     const settingsModal = document.getElementById('settings-modal');
     const advancedToggle = document.getElementById('advanced-toggle');
     const modalCloseBtn = document.getElementById('modal-close-btn');
-    const emaBtns = document.querySelectorAll('.ema-btn');
+    const emaWrapper = document.getElementById('ema-wrapper');
+    const emaSelectBtn = document.getElementById('ema-select-btn');
+    const emaDropdown = document.getElementById('ema-dropdown');
+    const emaOptions = document.querySelectorAll('.ema-option');
+    let selectedEma = 'ema200';
 
     advancedToggle.checked = advancedMode;
-    updateEmaButtonVisibility();
+    updateEmaDropdownVisibility();
 
-    function updateEmaButtonVisibility() {
-      emaBtns.forEach(btn => btn.style.display = advancedMode ? '' : 'none');
+    function updateEmaDropdownVisibility() {
+      emaWrapper.style.display = advancedMode ? '' : 'none';
       // If EMA was selected and advanced mode is turned off, revert to DCA
       if (!advancedMode && state.style.startsWith('ema')) {
         state.style = 'dca';
         styleBtns.forEach(b => b.classList.remove('active'));
+        emaSelectBtn.classList.remove('active');
         document.querySelector('[data-style="dca"]').classList.add('active');
         amountLabel.textContent = 'Monthly Amount';
         amountHint.textContent = "Amount you'd invest each month";
@@ -877,7 +955,7 @@
     advancedToggle.addEventListener('change', () => {
       advancedMode = advancedToggle.checked;
       localStorage.setItem('advancedMode', advancedMode);
-      updateEmaButtonVisibility();
+      updateEmaDropdownVisibility();
     });
 
     // Format currency
@@ -1691,6 +1769,9 @@
     styleBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         styleBtns.forEach(b => b.classList.remove('active'));
+        emaSelectBtn.classList.remove('active');
+        emaDropdown.classList.remove('open');
+        emaSelectBtn.classList.remove('open');
         btn.classList.add('active');
         state.style = btn.dataset.style;
 
@@ -1704,16 +1785,77 @@
           amountHint.textContent = 'One-time investment amount';
           amountInput.value = '10000';
           state.amount = 10000;
-        } else if (state.style.startsWith('ema')) {
-          const period = state.style.replace('ema', '');
-          amountLabel.textContent = 'Buy Amount per Signal';
-          amountHint.textContent = `Amount to invest each time price touches ${period} EMA`;
-          amountInput.value = '1000';
-          state.amount = 1000;
         }
 
         updateResults();
       });
+    });
+
+    // EMA custom dropdown handlers
+    emaSelectBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = emaDropdown.classList.contains('open');
+
+      if (isOpen) {
+        emaDropdown.classList.remove('open');
+        emaSelectBtn.classList.remove('open');
+      } else {
+        emaDropdown.classList.add('open');
+        emaSelectBtn.classList.add('open');
+        // Activate EMA mode when clicking
+        if (!emaSelectBtn.classList.contains('active')) {
+          styleBtns.forEach(b => b.classList.remove('active'));
+          emaSelectBtn.classList.add('active');
+          state.style = selectedEma;
+
+          const period = selectedEma.replace('ema', '');
+          amountLabel.textContent = 'Buy Amount per Signal';
+          amountHint.textContent = `Amount to invest each time price touches ${period} EMA`;
+          amountInput.value = '1000';
+          state.amount = 1000;
+          updateResults();
+        }
+      }
+    });
+
+    emaOptions.forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const value = opt.dataset.value;
+        selectedEma = value;
+
+        // Update selected state
+        emaOptions.forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+
+        // Update button text
+        emaSelectBtn.textContent = opt.textContent;
+
+        // Close dropdown
+        emaDropdown.classList.remove('open');
+        emaSelectBtn.classList.remove('open');
+
+        // Activate and set state
+        styleBtns.forEach(b => b.classList.remove('active'));
+        emaSelectBtn.classList.add('active');
+        state.style = value;
+
+        const period = value.replace('ema', '');
+        amountLabel.textContent = 'Buy Amount per Signal';
+        amountHint.textContent = `Amount to invest each time price touches ${period} EMA`;
+        amountInput.value = '1000';
+        state.amount = 1000;
+
+        updateResults();
+      });
+    });
+
+    // Close EMA dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.ema-select-wrapper')) {
+        emaDropdown.classList.remove('open');
+        emaSelectBtn.classList.remove('open');
+      }
     });
 
     amountInput.addEventListener('input', (e) => {
