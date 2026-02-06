@@ -680,7 +680,9 @@
         <div class="toggle-container">
           <button class="toggle-btn active" data-style="dca">Monthly</button>
           <button class="toggle-btn" data-style="lump">Lump Sum</button>
-          <button class="toggle-btn" data-style="ema" id="ema-btn" style="display:none">200 EMA</button>
+          <button class="toggle-btn ema-btn" data-style="ema50" style="display:none">50 EMA</button>
+          <button class="toggle-btn ema-btn" data-style="ema100" style="display:none">100 EMA</button>
+          <button class="toggle-btn ema-btn" data-style="ema200" style="display:none">200 EMA</button>
         </div>
       </div>
 
@@ -838,15 +840,15 @@
     const settingsModal = document.getElementById('settings-modal');
     const advancedToggle = document.getElementById('advanced-toggle');
     const modalCloseBtn = document.getElementById('modal-close-btn');
-    const emaBtn = document.getElementById('ema-btn');
+    const emaBtns = document.querySelectorAll('.ema-btn');
 
     advancedToggle.checked = advancedMode;
     updateEmaButtonVisibility();
 
     function updateEmaButtonVisibility() {
-      emaBtn.style.display = advancedMode ? '' : 'none';
+      emaBtns.forEach(btn => btn.style.display = advancedMode ? '' : 'none');
       // If EMA was selected and advanced mode is turned off, revert to DCA
-      if (!advancedMode && state.style === 'ema') {
+      if (!advancedMode && state.style.startsWith('ema')) {
         state.style = 'dca';
         styleBtns.forEach(b => b.classList.remove('active'));
         document.querySelector('[data-style="dca"]').classList.add('active');
@@ -1142,13 +1144,12 @@
       };
     }
 
-    // Calculate 200-day EMA from daily price data
-    function calculateEMA200(dailyData) {
-      if (dailyData.length < 200) return [];
-      const period = 200;
+    // Calculate EMA from daily price data for any period
+    function calculateEMA(dailyData, period) {
+      if (dailyData.length < period) return [];
       const multiplier = 2 / (period + 1);
 
-      // Seed with SMA of first 200 days
+      // Seed with SMA of first N days
       let sum = 0;
       for (let i = 0; i < period; i++) {
         sum += dailyData[i].price;
@@ -1164,17 +1165,18 @@
       return emaValues;
     }
 
-    // Backtest 200 EMA touch strategy
-    function backtestEMA(dailyData, monthlyData, buyAmount, yearsAgo) {
-      if (!dailyData || dailyData.length < 200) return null;
+    // Backtest EMA touch strategy
+    function backtestEMA(dailyData, monthlyData, buyAmount, yearsAgo, period = 200) {
+      if (!dailyData || dailyData.length < period) return null;
 
       const now = new Date();
       const cutoffDate = new Date(now);
       cutoffDate.setFullYear(cutoffDate.getFullYear() - yearsAgo);
 
-      // Find start index with 300-day prefetch for EMA warmup
+      // Find start index with prefetch for EMA warmup (period + 100 days buffer)
+      const prefetchDays = period + 100;
       const prefetchDate = new Date(cutoffDate);
-      prefetchDate.setDate(prefetchDate.getDate() - 300);
+      prefetchDate.setDate(prefetchDate.getDate() - prefetchDays);
 
       let prefetchIdx = 0;
       for (let i = 0; i < dailyData.length; i++) {
@@ -1185,7 +1187,7 @@
       }
 
       const slicedDaily = dailyData.slice(prefetchIdx);
-      const emaValues = calculateEMA200(slicedDaily);
+      const emaValues = calculateEMA(slicedDaily, period);
 
       if (emaValues.length === 0) return null;
 
@@ -1301,7 +1303,8 @@
         buyCount,
         buySignals,
         emaData: chartEmaData,
-        isEma: true
+        isEma: true,
+        emaPeriod: period
       };
     }
 
@@ -1313,11 +1316,13 @@
 
       if (state.style === 'dca') {
         return backtestDCA(state.tickerData.monthlyData, state.amount, state.years);
-      } else if (state.style === 'ema') {
-        return backtestEMA(state.tickerData.dailyData, state.tickerData.monthlyData, state.amount, state.years);
-      } else {
+      } else if (state.style === 'lump') {
         return backtestLumpSum(state.tickerData.monthlyData, state.amount, state.years);
+      } else if (state.style.startsWith('ema')) {
+        const period = parseInt(state.style.replace('ema', ''));
+        return backtestEMA(state.tickerData.dailyData, state.tickerData.monthlyData, state.amount, state.years, period);
       }
+      return null;
     }
 
     // Update stock info display
@@ -1385,6 +1390,7 @@
     function updateChartLegend(results) {
       const legend = document.querySelector('.chart-legend');
       if (results && results.isEma) {
+        const emaPeriod = results.emaPeriod || 200;
         legend.innerHTML = `
           <div class="legend-item">
             <div class="legend-dot typical"></div>
@@ -1400,7 +1406,11 @@
           </div>
           <div class="legend-item">
             <div class="legend-dot" style="background: #c4713b;"></div>
-            <span>200 EMA</span>
+            <span>${emaPeriod} EMA</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #5a7a5a;"></div>
+            <span>Buy Signal</span>
           </div>`;
       } else {
         legend.innerHTML = `
@@ -1689,16 +1699,17 @@
           amountHint.textContent = "Amount you'd invest each month";
           amountInput.value = '500';
           state.amount = 500;
-        } else if (state.style === 'ema') {
-          amountLabel.textContent = 'Buy Amount per Signal';
-          amountHint.textContent = 'Amount to invest each time price touches 200 EMA';
-          amountInput.value = '1000';
-          state.amount = 1000;
-        } else {
+        } else if (state.style === 'lump') {
           amountLabel.textContent = 'Initial Investment';
           amountHint.textContent = 'One-time investment amount';
           amountInput.value = '10000';
           state.amount = 10000;
+        } else if (state.style.startsWith('ema')) {
+          const period = state.style.replace('ema', '');
+          amountLabel.textContent = 'Buy Amount per Signal';
+          amountHint.textContent = `Amount to invest each time price touches ${period} EMA`;
+          amountInput.value = '1000';
+          state.amount = 1000;
         }
 
         updateResults();
