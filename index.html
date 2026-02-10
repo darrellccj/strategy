@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Investment Simulator</title>
+  <title>Growth Investing Simulator</title>
   <style>
     * {
       margin: 0;
@@ -16,7 +16,7 @@
       background: #faf8f5;
       color: #3d3929;
       min-height: 100vh;
-      padding: 24px 16px;
+      padding: 16px 16px;
     }
 
     .container {
@@ -25,23 +25,30 @@
     }
 
     h1 {
-      font-size: 1.75rem;
+      font-size: 1.5rem;
       font-weight: 600;
       color: #5c5340;
-      margin-bottom: 32px;
+      margin-bottom: 2px;
       text-align: center;
+    }
+
+    .disclaimer {
+      font-size: 0.7rem;
+      color: #9a8d79;
+      text-align: center;
+      margin-bottom: 8px;
     }
 
     .card {
       background: #ffffff;
       border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
       box-shadow: 0 2px 8px rgba(92, 83, 64, 0.08);
     }
 
     .input-group {
-      margin-bottom: 24px;
+      margin-bottom: 18px;
     }
 
     .input-group:last-child {
@@ -53,7 +60,7 @@
       font-size: 0.9rem;
       font-weight: 500;
       color: #6b5f4d;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     /* Ticker Search */
@@ -324,13 +331,13 @@
     .results-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
     .result-item {
       background: #ffffff;
-      padding: 16px;
+      padding: 12px;
       border-radius: 12px;
     }
 
@@ -368,7 +375,7 @@
     .chart-container {
       background: #ffffff;
       border-radius: 12px;
-      padding: 16px;
+      padding: 12px;
     }
 
     .chart-title {
@@ -808,7 +815,8 @@
 </head>
 <body>
   <div class="container">
-    <h1>Investment Simulator</h1>
+    <h1>Growth Investing Simulator</h1>
+    <p class="disclaimer">Past performance does not guarantee future results.</p>
 
     <div class="main-layout">
     <div class="card">
