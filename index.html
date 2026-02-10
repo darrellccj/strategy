@@ -389,6 +389,7 @@
       gap: 20px;
       margin-top: 12px;
       font-size: 0.8rem;
+      flex-wrap: wrap;
     }
 
     .legend-item {
@@ -404,149 +405,6 @@
     }
 
     .legend-dot.typical { background: #a08c6d; }
-
-    /* Settings button */
-    .settings-btn {
-      position: fixed;
-      top: 16px;
-      left: 16px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid #e5e0d5;
-      background: #ffffff;
-      color: #6b5f4d;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 8px rgba(92, 83, 64, 0.08);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      z-index: 200;
-    }
-
-    .settings-btn:hover {
-      border-color: #a08c6d;
-      box-shadow: 0 2px 12px rgba(92, 83, 64, 0.15);
-    }
-
-    /* Modal */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(61, 57, 41, 0.4);
-      z-index: 300;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-overlay.open {
-      display: flex;
-    }
-
-    .modal-content {
-      background: #faf8f5;
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 360px;
-      width: 90%;
-      box-shadow: 0 8px 32px rgba(92, 83, 64, 0.2);
-    }
-
-    .modal-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #5c5340;
-      margin-bottom: 24px;
-    }
-
-    .modal-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-    }
-
-    .modal-label {
-      font-size: 0.95rem;
-      color: #3d3929;
-    }
-
-    .modal-sublabel {
-      font-size: 0.8rem;
-      color: #9a8d79;
-      margin-top: 2px;
-    }
-
-    /* Toggle switch */
-    .switch {
-      position: relative;
-      width: 48px;
-      height: 26px;
-      flex-shrink: 0;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .switch-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #d4cfc4;
-      border-radius: 26px;
-      transition: background 0.2s ease;
-    }
-
-    .switch-slider::before {
-      content: '';
-      position: absolute;
-      height: 20px;
-      width: 20px;
-      left: 3px;
-      bottom: 3px;
-      background: #ffffff;
-      border-radius: 50%;
-      transition: transform 0.2s ease;
-    }
-
-    .switch input:checked + .switch-slider {
-      background: #a08c6d;
-    }
-
-    .switch input:checked + .switch-slider::before {
-      transform: translateX(22px);
-    }
-
-    .modal-close-btn {
-      margin-top: 24px;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #a08c6d;
-      color: #ffffff;
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.2s ease;
-    }
-
-    .modal-close-btn:hover {
-      background: #8a7660;
-    }
 
     /* Loading state */
     .loading {
@@ -594,6 +452,252 @@
       margin-top: 10px;
     }
 
+    /* Portfolio Builder */
+    .portfolio-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .portfolio-entry {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: #f0ebe2;
+      border-radius: 10px;
+    }
+
+    .portfolio-entry .pe-symbol {
+      font-weight: 600;
+      color: #5c5340;
+      font-size: 0.95rem;
+      min-width: 50px;
+    }
+
+    .portfolio-entry .pe-name {
+      flex: 1;
+      font-size: 0.8rem;
+      color: #9a8d79;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .portfolio-alloc-input {
+      width: 58px;
+      padding: 6px 4px;
+      border: 2px solid #e5e0d5;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #3d3929;
+      background: #ffffff;
+      font-family: inherit;
+      text-align: center;
+      transition: border-color 0.2s ease;
+    }
+
+    .portfolio-alloc-input:focus {
+      outline: none;
+      border-color: #a08c6d;
+    }
+
+    .pe-pct-label {
+      font-size: 0.85rem;
+      color: #9a8d79;
+    }
+
+    .remove-ticker-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: #9a8d79;
+      font-size: 1.2rem;
+      cursor: pointer;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .remove-ticker-btn:hover {
+      background: #e8d8d0;
+      color: #8b5a5a;
+    }
+
+    .allocation-bar {
+      height: 6px;
+      background: #e5e0d5;
+      border-radius: 3px;
+      margin-bottom: 4px;
+      overflow: hidden;
+    }
+
+    .allocation-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    .allocation-fill.ok {
+      background: #5a7a5a;
+    }
+
+    .allocation-fill.over {
+      background: #8b5a5a;
+    }
+
+    .allocation-fill.under {
+      background: #a08c6d;
+    }
+
+    .allocation-status {
+      font-size: 0.75rem;
+      color: #9a8d79;
+      margin-bottom: 12px;
+      text-align: right;
+    }
+
+    .allocation-status.warn {
+      color: #8b5a5a;
+    }
+
+    .add-ticker-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+      margin-bottom: 12px;
+    }
+
+    .add-ticker-row .ticker-search-wrapper {
+      flex: 1;
+    }
+
+    .add-ticker-row .ticker-search {
+      padding: 10px 12px;
+      font-size: 0.95rem;
+    }
+
+    .add-ticker-btn {
+      padding: 10px 16px;
+      border: 2px solid #a08c6d;
+      background: #a08c6d;
+      color: #ffffff;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .add-ticker-btn:hover {
+      background: #8a7760;
+      border-color: #8a7760;
+    }
+
+    .add-ticker-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .portfolio-empty {
+      text-align: center;
+      color: #9a8d79;
+      font-size: 0.9rem;
+      padding: 16px;
+    }
+
+    /* Breakdown Section */
+    .breakdown-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px;
+      margin-top: 16px;
+      background: #ffffff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #6b5f4d;
+      font-family: inherit;
+      width: 100%;
+      transition: background 0.15s ease;
+    }
+
+    .breakdown-toggle:hover {
+      background: #f0ebe2;
+    }
+
+    .breakdown-toggle .arrow {
+      transition: transform 0.2s ease;
+      font-size: 0.7rem;
+    }
+
+    .breakdown-toggle.open .arrow {
+      transform: rotate(180deg);
+    }
+
+    .breakdown-list {
+      display: none;
+      margin-top: 12px;
+      gap: 10px;
+      flex-direction: column;
+    }
+
+    .breakdown-list.open {
+      display: flex;
+    }
+
+    .breakdown-entry {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .breakdown-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .breakdown-header .bh-ticker {
+      font-weight: 600;
+      color: #5c5340;
+      font-size: 0.95rem;
+    }
+
+    .breakdown-header .bh-alloc {
+      font-size: 0.8rem;
+      color: #9a8d79;
+    }
+
+    .breakdown-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 16px;
+      font-size: 0.8rem;
+    }
+
+    .breakdown-details .bd-label {
+      color: #9a8d79;
+    }
+
+    .breakdown-details .bd-value {
+      color: #5c5340;
+      font-weight: 500;
+      text-align: right;
+    }
+
     /* Small mobile adjustments */
     @media (max-width: 400px) {
       h1 {
@@ -607,20 +711,16 @@
       .result-item.full-width {
         grid-column: 1;
       }
+
+      .portfolio-entry .pe-name {
+        display: none;
+      }
     }
 
     /* Desktop layout */
     @media (min-width: 768px) {
       body {
         padding: 40px 32px;
-      }
-
-      .settings-btn {
-        top: 24px;
-        left: 24px;
-        width: 44px;
-        height: 44px;
-        font-size: 1.3rem;
       }
 
       .container {
@@ -707,40 +807,23 @@
   </style>
 </head>
 <body>
-  <button class="settings-btn" id="settings-btn" title="Settings">&#9881;</button>
-
-  <div class="modal-overlay" id="settings-modal">
-    <div class="modal-content">
-      <div class="modal-title">Settings</div>
-      <div class="modal-row">
-        <div>
-          <div class="modal-label">Advanced Mode</div>
-          <div class="modal-sublabel">Unlock additional strategies</div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="advanced-toggle">
-          <span class="switch-slider"></span>
-        </label>
-      </div>
-      <button class="modal-close-btn" id="modal-close-btn">Done</button>
-    </div>
-  </div>
-
   <div class="container">
     <h1>Investment Simulator</h1>
 
     <div class="main-layout">
     <div class="card">
       <div class="input-group">
-        <label>Search for a Stock</label>
-        <div class="ticker-search-wrapper">
-          <input type="text" class="ticker-search" id="ticker-search" placeholder="Type to search (e.g. AAPL, BTC)" autocomplete="off">
-          <div class="ticker-dropdown" id="ticker-dropdown"></div>
+        <label>Portfolio</label>
+        <div class="add-ticker-row">
+          <div class="ticker-search-wrapper">
+            <input type="text" class="ticker-search" id="ticker-search" placeholder="Add a stock (e.g. AAPL)" autocomplete="off">
+            <div class="ticker-dropdown" id="ticker-dropdown"></div>
+          </div>
+          <button class="add-ticker-btn" id="add-ticker-btn" disabled>+</button>
         </div>
-        <div class="stock-info" id="stock-info">
-          <span class="stock-price" id="stock-price">Loading...</span>
-          <span class="stock-change" id="stock-change"></span>
-        </div>
+        <div id="portfolio-list" class="portfolio-list"></div>
+        <div class="allocation-bar"><div class="allocation-fill ok" id="allocation-fill"></div></div>
+        <div class="allocation-status" id="allocation-status">Total: 100%</div>
       </div>
 
       <div class="input-group">
@@ -748,7 +831,7 @@
         <div class="toggle-container">
           <button class="toggle-btn active" data-style="dca">Monthly</button>
           <button class="toggle-btn" data-style="lump">Lump Sum</button>
-          <div class="ema-select-wrapper" id="ema-wrapper" style="display:none">
+          <div class="ema-select-wrapper" id="ema-wrapper">
             <button class="ema-select-btn" id="ema-select-btn">200 EMA</button>
             <div class="ema-select-dropdown" id="ema-dropdown">
               <div class="ema-option" data-value="ema50">50 EMA</div>
@@ -785,13 +868,13 @@
       <div class="results-grid">
         <div class="result-item">
           <div class="result-label">Total Contributed</div>
-          <div class="result-value" id="total-contributed">$120,000</div>
+          <div class="result-value" id="total-contributed">$0</div>
         </div>
 
         <div class="result-item">
           <div class="result-label">Value Today</div>
-          <div class="result-value" id="final-value">$270,000</div>
-          <div class="result-subtext" id="profit-text">Profit: $150,000</div>
+          <div class="result-value" id="final-value">$0</div>
+          <div class="result-subtext" id="profit-text">Profit: $0</div>
         </div>
 
         <div class="result-item">
@@ -800,9 +883,8 @@
         </div>
 
         <div class="result-item">
-          <div class="result-label">Shares Owned</div>
-          <div class="result-value" id="shares-owned">0</div>
-          <div class="result-subtext" id="avg-cost-text">Avg cost: $0.00/share</div>
+          <div class="result-label">Total Return</div>
+          <div class="result-value" id="total-return">0%</div>
         </div>
       </div>
 
@@ -821,6 +903,11 @@
         </div>
         <div class="data-source">Data from Yahoo Finance. Past performance doesn't guarantee future results.</div>
       </div>
+
+      <button class="breakdown-toggle" id="breakdown-toggle" style="display:none;">
+        Per-Ticker Breakdown <span class="arrow">&#9660;</span>
+      </button>
+      <div class="breakdown-list" id="breakdown-list"></div>
     </div>
     </div>
   </div>
@@ -845,13 +932,16 @@
 
     // State
     let state = {
-      ticker: 'VOO',
-      yahooTicker: 'VOO',
+      portfolio: [
+        { symbol: 'VOO', yahoo: 'VOO', name: 'Vanguard S&P 500 ETF', allocation: 100, data: null }
+      ],
       style: 'dca',
       amount: 500,
-      years: 5,
-      tickerData: null
+      years: 5
     };
+
+    // Pending ticker for adding to portfolio
+    let pendingTicker = null;
 
     // Cache for ticker data
     const dataCache = {};
@@ -897,6 +987,10 @@
     // DOM Elements
     const tickerSearch = document.getElementById('ticker-search');
     const tickerDropdown = document.getElementById('ticker-dropdown');
+    const addTickerBtn = document.getElementById('add-ticker-btn');
+    const portfolioListEl = document.getElementById('portfolio-list');
+    const allocationFill = document.getElementById('allocation-fill');
+    const allocationStatus = document.getElementById('allocation-status');
     const styleBtns = document.querySelectorAll('.toggle-btn');
     const amountInput = document.getElementById('amount');
     const amountLabel = document.getElementById('amount-label');
@@ -904,59 +998,14 @@
     const yearsSlider = document.getElementById('years');
     const yearsDisplay = document.getElementById('years-display');
     const resultsCard = document.querySelector('.results-card');
-    const stockPriceEl = document.getElementById('stock-price');
-    const stockChangeEl = document.getElementById('stock-change');
+    const breakdownToggle = document.getElementById('breakdown-toggle');
+    const breakdownList = document.getElementById('breakdown-list');
 
-    // Settings / Advanced mode
-    let advancedMode = localStorage.getItem('advancedMode') === 'true';
-    const settingsBtn = document.getElementById('settings-btn');
-    const settingsModal = document.getElementById('settings-modal');
-    const advancedToggle = document.getElementById('advanced-toggle');
-    const modalCloseBtn = document.getElementById('modal-close-btn');
-    const emaWrapper = document.getElementById('ema-wrapper');
+    // EMA dropdown elements
     const emaSelectBtn = document.getElementById('ema-select-btn');
     const emaDropdown = document.getElementById('ema-dropdown');
     const emaOptions = document.querySelectorAll('.ema-option');
     let selectedEma = 'ema200';
-
-    advancedToggle.checked = advancedMode;
-    updateEmaDropdownVisibility();
-
-    function updateEmaDropdownVisibility() {
-      emaWrapper.style.display = advancedMode ? '' : 'none';
-      // If EMA was selected and advanced mode is turned off, revert to DCA
-      if (!advancedMode && state.style.startsWith('ema')) {
-        state.style = 'dca';
-        styleBtns.forEach(b => b.classList.remove('active'));
-        emaSelectBtn.classList.remove('active');
-        document.querySelector('[data-style="dca"]').classList.add('active');
-        amountLabel.textContent = 'Monthly Amount';
-        amountHint.textContent = "Amount you'd invest each month";
-        amountInput.value = '500';
-        state.amount = 500;
-        updateResults();
-      }
-    }
-
-    settingsBtn.addEventListener('click', () => {
-      settingsModal.classList.add('open');
-    });
-
-    modalCloseBtn.addEventListener('click', () => {
-      settingsModal.classList.remove('open');
-    });
-
-    settingsModal.addEventListener('click', (e) => {
-      if (e.target === settingsModal) {
-        settingsModal.classList.remove('open');
-      }
-    });
-
-    advancedToggle.addEventListener('change', () => {
-      advancedMode = advancedToggle.checked;
-      localStorage.setItem('advancedMode', advancedMode);
-      updateEmaDropdownVisibility();
-    });
 
     // Format currency
     function formatCurrency(value) {
@@ -1386,53 +1435,273 @@
       };
     }
 
-    // Calculate backtest results
-    function calculate() {
-      if (!state.tickerData || !state.tickerData.monthlyData || state.tickerData.monthlyData.length === 0) {
-        return null;
-      }
+    // Run backtest for a single ticker entry
+    function backtestSingle(entry, amount) {
+      const data = entry.data;
+      if (!data || !data.monthlyData || data.monthlyData.length === 0) return null;
 
       if (state.style === 'dca') {
-        return backtestDCA(state.tickerData.monthlyData, state.amount, state.years);
+        return backtestDCA(data.monthlyData, amount, state.years);
       } else if (state.style === 'lump') {
-        return backtestLumpSum(state.tickerData.monthlyData, state.amount, state.years);
+        return backtestLumpSum(data.monthlyData, amount, state.years);
       } else if (state.style.startsWith('ema')) {
         const period = parseInt(state.style.replace('ema', ''));
-        return backtestEMA(state.tickerData.dailyData, state.tickerData.monthlyData, state.amount, state.years, period);
+        return backtestEMA(data.dailyData, data.monthlyData, amount, state.years, period);
       }
       return null;
     }
 
-    // Update stock info display
-    function updateStockInfo() {
-      if (!state.tickerData) return;
+    // Calculate aggregate portfolio results
+    function calculate() {
+      const portfolio = state.portfolio;
+      if (portfolio.length === 0) return null;
 
-      const data = state.tickerData;
+      const totalAlloc = getTotalAllocation();
+      if (totalAlloc === 0) return null;
 
-      if (data.isFallback) {
-        stockPriceEl.textContent = 'No data';
-        stockChangeEl.textContent = '(could not load)';
-        stockChangeEl.className = 'stock-change';
-      } else {
-        stockPriceEl.textContent = `$${data.currentPrice.toFixed(2)}`;
-        const sign = data.priceChange >= 0 ? '+' : '';
-        stockChangeEl.textContent = `${sign}$${data.priceChange.toFixed(2)} (${sign}${data.percentChange.toFixed(2)}%)`;
-        stockChangeEl.className = `stock-change ${data.priceChange >= 0 ? 'positive' : 'negative'}`;
+      const perTickerResults = [];
+      let anyData = false;
+      let allNoSignals = true;
+
+      for (const entry of portfolio) {
+        const tickerAmount = state.amount * (entry.allocation / totalAlloc);
+        const result = backtestSingle(entry, tickerAmount);
+        perTickerResults.push({
+          symbol: entry.symbol,
+          name: entry.name,
+          allocation: entry.allocation,
+          currentPrice: entry.data ? entry.data.currentPrice : 0,
+          priceChange: entry.data ? entry.data.priceChange : 0,
+          percentChange: entry.data ? entry.data.percentChange : 0,
+          result
+        });
+        if (result && !result.noSignals) {
+          anyData = true;
+          allNoSignals = false;
+        } else if (result && result.noSignals) {
+          // at least one has noSignals
+        }
       }
+
+      if (!anyData) {
+        if (allNoSignals && perTickerResults.some(p => p.result && p.result.noSignals)) {
+          return { noSignals: true, perTickerResults };
+        }
+        return null;
+      }
+
+      // Find shortest common timeline length
+      let minLen = Infinity;
+      for (const ptr of perTickerResults) {
+        if (ptr.result && ptr.result.portfolioValues && !ptr.result.noSignals) {
+          minLen = Math.min(minLen, ptr.result.portfolioValues.length);
+        }
+      }
+      if (minLen === Infinity || minLen === 0) return null;
+
+      // Aggregate portfolio values
+      const aggregateValues = [];
+      let aggregateTotalInvested = 0;
+      let aggregateFinalValue = 0;
+
+      for (let i = 0; i < minLen; i++) {
+        let sumValue = 0;
+        let sumInvested = 0;
+        let date = null;
+        for (const ptr of perTickerResults) {
+          if (ptr.result && ptr.result.portfolioValues && !ptr.result.noSignals) {
+            const pv = ptr.result.portfolioValues[i];
+            sumValue += pv.value;
+            sumInvested += pv.invested;
+            if (!date) date = pv.date;
+          }
+        }
+        aggregateValues.push({ date, value: sumValue, invested: sumInvested });
+      }
+
+      // Sum final totals
+      for (const ptr of perTickerResults) {
+        if (ptr.result && !ptr.result.noSignals) {
+          aggregateTotalInvested += ptr.result.totalInvested;
+          aggregateFinalValue += ptr.result.finalValue;
+        }
+      }
+
+      const profit = aggregateFinalValue - aggregateTotalInvested;
+      const returnPercent = aggregateTotalInvested > 0 ? ((aggregateFinalValue - aggregateTotalInvested) / aggregateTotalInvested) * 100 : 0;
+
+      // Compute aggregate max drawdown from combined curve
+      let peak = 0;
+      let maxDrawdown = 0;
+      for (const pv of aggregateValues) {
+        if (pv.value > peak) peak = pv.value;
+        if (peak > 0) {
+          const dd = (pv.value - peak) / peak;
+          if (dd < maxDrawdown) maxDrawdown = dd;
+        }
+      }
+
+      // For single-ticker portfolios, pass through EMA data
+      let emaData = null;
+      let isEma = false;
+      let emaPeriod = null;
+      let buySignals = null;
+      let buyCount = null;
+      if (portfolio.length === 1 && perTickerResults[0].result && perTickerResults[0].result.isEma) {
+        const r = perTickerResults[0].result;
+        emaData = r.emaData;
+        isEma = true;
+        emaPeriod = r.emaPeriod;
+        buySignals = r.buySignals;
+        buyCount = r.buyCount;
+      }
+
+      return {
+        totalInvested: aggregateTotalInvested,
+        finalValue: aggregateFinalValue,
+        profit,
+        returnPercent,
+        maxDrawdown: maxDrawdown * 100,
+        portfolioValues: aggregateValues,
+        perTickerResults,
+        emaData,
+        isEma,
+        emaPeriod,
+        buySignals,
+        buyCount
+      };
+    }
+
+    // --- Portfolio management ---
+    function getTotalAllocation() {
+      return state.portfolio.reduce((sum, e) => sum + e.allocation, 0);
+    }
+
+    function renderPortfolioList() {
+      const list = portfolioListEl;
+      list.innerHTML = '';
+
+      if (state.portfolio.length === 0) {
+        list.innerHTML = '<div class="portfolio-empty">Add a stock to get started</div>';
+      }
+
+      state.portfolio.forEach((entry, idx) => {
+        const div = document.createElement('div');
+        div.className = 'portfolio-entry';
+        div.innerHTML = `
+          <span class="pe-symbol">${entry.symbol}</span>
+          <span class="pe-name">${entry.name}</span>
+          <input type="text" class="portfolio-alloc-input" value="${entry.allocation}" data-idx="${idx}" inputmode="numeric">
+          <span class="pe-pct-label">%</span>
+          <button class="remove-ticker-btn" data-idx="${idx}">&times;</button>
+        `;
+        list.appendChild(div);
+      });
+
+      // Wire allocation inputs
+      list.querySelectorAll('.portfolio-alloc-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          const val = parseInt(e.target.value.replace(/[^0-9]/g, '')) || 0;
+          state.portfolio[idx].allocation = val;
+          updateAllocationBar();
+          updateResults();
+        });
+        input.addEventListener('blur', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          e.target.value = state.portfolio[idx].allocation;
+        });
+        input.addEventListener('focus', (e) => {
+          e.target.select();
+        });
+      });
+
+      // Wire remove buttons
+      list.querySelectorAll('.remove-ticker-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          removeTickerFromPortfolio(idx);
+        });
+      });
+
+      updateAllocationBar();
+    }
+
+    function updateAllocationBar() {
+      const total = getTotalAllocation();
+      allocationFill.style.width = Math.min(total, 100) + '%';
+
+      if (total === 100) {
+        allocationFill.className = 'allocation-fill ok';
+        allocationStatus.textContent = `Total: ${total}%`;
+        allocationStatus.className = 'allocation-status';
+      } else if (total > 100) {
+        allocationFill.className = 'allocation-fill over';
+        allocationStatus.textContent = `Total: ${total}% (over 100%)`;
+        allocationStatus.className = 'allocation-status warn';
+      } else {
+        allocationFill.className = 'allocation-fill under';
+        allocationStatus.textContent = `Total: ${total}%`;
+        allocationStatus.className = 'allocation-status';
+      }
+    }
+
+    async function addTickerToPortfolio(ticker) {
+      // Silently ignore duplicates
+      if (state.portfolio.some(e => e.symbol === ticker.symbol)) return;
+
+      const remaining = Math.max(0, 100 - getTotalAllocation());
+      const allocation = remaining > 0 ? remaining : 10;
+
+      const entry = {
+        symbol: ticker.symbol,
+        yahoo: ticker.yahoo,
+        name: ticker.name,
+        allocation,
+        data: null
+      };
+
+      state.portfolio.push(entry);
+      renderPortfolioList();
+
+      // Fetch data
+      resultsCard.classList.add('loading');
+      entry.data = await fetchStockData(ticker.yahoo);
+      resultsCard.classList.remove('loading');
+      updateResults();
+    }
+
+    function removeTickerFromPortfolio(idx) {
+      state.portfolio.splice(idx, 1);
+      renderPortfolioList();
+      updateResults();
+    }
+
+    // Load data for all portfolio tickers
+    async function loadPortfolioData() {
+      resultsCard.classList.add('loading');
+      await Promise.all(
+        state.portfolio.map(async (entry) => {
+          entry.data = await fetchStockData(entry.yahoo);
+        })
+      );
+      resultsCard.classList.remove('loading');
+      updateResults();
     }
 
     // Update results display
     function updateResults() {
       const results = calculate();
+
       if (!results || results.noSignals) {
-        document.getElementById('total-contributed').textContent = results && results.noSignals ? '$0' : 'No data';
-        document.getElementById('final-value').textContent = results && results.noSignals ? '$0' : 'No data';
+        document.getElementById('total-contributed').textContent = results && results.noSignals ? '$0' : (state.portfolio.length === 0 ? '-' : 'No data');
+        document.getElementById('final-value').textContent = results && results.noSignals ? '$0' : (state.portfolio.length === 0 ? '-' : 'No data');
         document.getElementById('max-drawdown').textContent = '-';
-        document.getElementById('shares-owned').textContent = '-';
-        document.getElementById('profit-text').innerHTML = results && results.noSignals ? 'No 200 EMA touch signals in this period' : '';
-        document.getElementById('avg-cost-text').textContent = '';
+        document.getElementById('total-return').textContent = '-';
+        document.getElementById('profit-text').innerHTML = results && results.noSignals ? 'No EMA touch signals in this period' : '';
         drawChart(null);
         updateChartLegend(null);
+        renderBreakdown(results ? results.perTickerResults : null);
         return;
       }
 
@@ -1452,22 +1721,74 @@
       drawdownEl.textContent = results.maxDrawdown.toFixed(1) + '%';
       drawdownEl.className = 'result-value negative';
 
-      // Shares owned
-      document.getElementById('shares-owned').textContent = results.totalShares.toFixed(4);
-      const avgCostText = `Avg cost: $${results.avgCostPerShare.toFixed(2)}/share`;
-      document.getElementById('avg-cost-text').textContent = results.isEma
-        ? `${avgCostText} (${results.buyCount} buys)`
-        : avgCostText;
+      // Total return
+      const totalReturnEl = document.getElementById('total-return');
+      totalReturnEl.textContent = formatPercent(results.returnPercent);
+      totalReturnEl.className = `result-value ${results.returnPercent >= 0 ? 'positive' : 'negative'}`;
 
       // Update chart legend and draw chart
       updateChartLegend(results);
       drawChart(results);
+      renderBreakdown(results.perTickerResults);
+    }
+
+    // Render per-ticker breakdown
+    function renderBreakdown(perTickerResults) {
+      if (!perTickerResults || perTickerResults.length <= 1) {
+        breakdownToggle.style.display = 'none';
+        breakdownList.classList.remove('open');
+        breakdownList.innerHTML = '';
+        return;
+      }
+
+      breakdownToggle.style.display = '';
+      breakdownList.innerHTML = '';
+
+      for (const ptr of perTickerResults) {
+        const r = ptr.result;
+        const div = document.createElement('div');
+        div.className = 'breakdown-entry';
+
+        if (!r || r.noSignals) {
+          div.innerHTML = `
+            <div class="breakdown-header">
+              <span class="bh-ticker">${ptr.symbol}</span>
+              <span class="bh-alloc">${ptr.allocation}%</span>
+            </div>
+            <div class="breakdown-details">
+              <span class="bd-label">Status</span>
+              <span class="bd-value">${r && r.noSignals ? 'No signals' : 'No data'}</span>
+            </div>`;
+        } else {
+          const sign = ptr.priceChange >= 0 ? '+' : '';
+          div.innerHTML = `
+            <div class="breakdown-header">
+              <span class="bh-ticker">${ptr.symbol}</span>
+              <span class="bh-alloc">${ptr.allocation}%</span>
+            </div>
+            <div class="breakdown-details">
+              <span class="bd-label">Current Price</span>
+              <span class="bd-value">$${ptr.currentPrice.toFixed(2)} (${sign}${ptr.percentChange.toFixed(2)}%)</span>
+              <span class="bd-label">Value</span>
+              <span class="bd-value">${formatCurrency(r.finalValue)}</span>
+              <span class="bd-label">Invested</span>
+              <span class="bd-value">${formatCurrency(r.totalInvested)}</span>
+              <span class="bd-label">Shares</span>
+              <span class="bd-value">${r.totalShares.toFixed(4)}</span>
+              <span class="bd-label">Avg Cost</span>
+              <span class="bd-value">$${r.avgCostPerShare.toFixed(2)}</span>
+              <span class="bd-label">Max Drawdown</span>
+              <span class="bd-value">${r.maxDrawdown.toFixed(1)}%</span>
+            </div>`;
+        }
+        breakdownList.appendChild(div);
+      }
     }
 
     // Update chart legend based on strategy mode
     function updateChartLegend(results) {
       const legend = document.querySelector('.chart-legend');
-      if (results && results.isEma) {
+      if (results && results.isEma && state.portfolio.length === 1) {
         const emaPeriod = results.emaPeriod || 200;
         legend.innerHTML = `
           <div class="legend-item">
@@ -1636,8 +1957,8 @@
       ctx.fillStyle = isProfit ? 'rgba(90, 122, 90, 0.15)' : 'rgba(139, 90, 90, 0.15)';
       ctx.fill();
 
-      // Draw EMA overlay when in EMA mode
-      if (results.isEma && results.emaData && results.emaData.length > 0) {
+      // Draw EMA overlay only for single-ticker portfolios
+      if (results.isEma && results.emaData && results.emaData.length > 0 && state.portfolio.length === 1) {
         const emaData = results.emaData;
 
         // Compute secondary Y-scale for price/EMA
@@ -1669,7 +1990,7 @@
         }
         ctx.stroke();
 
-        // Draw 200 EMA line (warm orange, dashed)
+        // Draw EMA line (warm orange, dashed)
         ctx.strokeStyle = '#c4713b';
         ctx.lineWidth = 1.5;
         ctx.setLineDash([6, 4]);
@@ -1685,21 +2006,6 @@
       }
     }
 
-    // Load ticker data and update UI
-    async function loadTicker(symbol, yahooTicker) {
-      resultsCard.classList.add('loading');
-      stockPriceEl.textContent = 'Loading...';
-      stockChangeEl.textContent = '';
-
-      state.ticker = symbol;
-      state.yahooTicker = yahooTicker;
-      state.tickerData = await fetchStockData(yahooTicker);
-
-      updateStockInfo();
-      updateResults();
-      resultsCard.classList.remove('loading');
-    }
-
     // --- Ticker search dropdown ---
     function renderDropdown(filter) {
       const query = filter.toLowerCase();
@@ -1712,7 +2018,8 @@
       matches.forEach(t => {
         const div = document.createElement('div');
         div.className = 'ticker-option';
-        div.innerHTML = `<span class="ticker-symbol">${t.symbol}</span><span class="ticker-name">${t.name}</span>`;
+        const inPortfolio = state.portfolio.some(e => e.symbol === t.symbol);
+        div.innerHTML = `<span class="ticker-symbol">${t.symbol}${inPortfolio ? ' ✓' : ''}</span><span class="ticker-name">${t.name}</span>`;
         div.addEventListener('mousedown', (e) => {
           e.preventDefault();
           selectTicker(t);
@@ -1730,30 +2037,46 @@
     }
 
     function selectTicker(t) {
-      state.ticker = t.symbol;
+      pendingTicker = t;
       tickerSearch.value = `${t.symbol} - ${t.name}`;
       tickerDropdown.classList.remove('open');
       tickerSearch.classList.remove('has-focus');
-      tickerSearch.blur();
-      loadTicker(t.symbol, t.yahoo);
+      addTickerBtn.disabled = false;
+
+      // If ticker already in portfolio, disable button
+      if (state.portfolio.some(e => e.symbol === t.symbol)) {
+        addTickerBtn.disabled = true;
+      }
     }
 
     tickerSearch.addEventListener('focus', () => {
       tickerSearch.value = '';
+      pendingTicker = null;
+      addTickerBtn.disabled = true;
       renderDropdown('');
     });
 
     tickerSearch.addEventListener('input', () => {
+      pendingTicker = null;
+      addTickerBtn.disabled = true;
       renderDropdown(tickerSearch.value);
     });
 
     tickerSearch.addEventListener('blur', () => {
       tickerDropdown.classList.remove('open');
       tickerSearch.classList.remove('has-focus');
-      // Restore display value
-      const current = TICKERS.find(t => t.symbol === state.ticker);
-      if (current) {
-        tickerSearch.value = `${current.symbol} - ${current.name}`;
+      if (pendingTicker) {
+        tickerSearch.value = `${pendingTicker.symbol} - ${pendingTicker.name}`;
+      } else {
+        tickerSearch.value = '';
+      }
+    });
+
+    // Handle Enter key in search to add ticker
+    tickerSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && pendingTicker && !addTickerBtn.disabled) {
+        e.preventDefault();
+        addTickerBtn.click();
       }
     });
 
@@ -1763,6 +2086,21 @@
         tickerDropdown.classList.remove('open');
         tickerSearch.classList.remove('has-focus');
       }
+    });
+
+    // Add ticker button
+    addTickerBtn.addEventListener('click', () => {
+      if (!pendingTicker) return;
+      addTickerToPortfolio(pendingTicker);
+      pendingTicker = null;
+      tickerSearch.value = '';
+      addTickerBtn.disabled = true;
+    });
+
+    // Breakdown toggle
+    breakdownToggle.addEventListener('click', () => {
+      breakdownToggle.classList.toggle('open');
+      breakdownList.classList.toggle('open');
     });
 
     // --- Other event listeners ---
@@ -1884,9 +2222,8 @@
     window.addEventListener('resize', updateResults);
 
     // Initial load
-    const defaultTicker = TICKERS.find(t => t.symbol === 'VOO');
-    tickerSearch.value = `${defaultTicker.symbol} - ${defaultTicker.name}`;
-    loadTicker(defaultTicker.symbol, defaultTicker.yahoo);
+    renderPortfolioList();
+    loadPortfolioData();
   </script>
 </body>
 </html>
