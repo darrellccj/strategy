@@ -133,100 +133,92 @@
       border-radius: 10px 10px 0 0;
     }
 
-    /* Contribution Style Toggle */
-    .toggle-container {
-      display: flex;
-      background: #f0ebe2;
-      border-radius: 10px;
-      padding: 4px;
-    }
-
-    .toggle-btn {
-      flex: 1;
-      padding: 12px 16px;
-      border: none;
-      background: transparent;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #6b5f4d;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: inherit;
-    }
-
-    .toggle-btn.active {
-      background: #ffffff;
-      color: #5c5340;
-      box-shadow: 0 2px 4px rgba(92, 83, 64, 0.1);
-    }
-
-    /* EMA Dropdown (custom styled like ticker search) */
-    .ema-select-wrapper {
-      flex: 1;
+    /* Strategy Dropdown */
+    .strategy-select-wrapper {
       position: relative;
     }
 
-    .ema-select-btn {
+    .strategy-select-btn {
       width: 100%;
-      padding: 12px 16px;
-      border: none;
-      background: transparent;
-      border-radius: 8px;
-      font-size: 0.95rem;
+      padding: 14px 16px;
+      border: 2px solid #e5e0d5;
+      border-radius: 10px;
+      font-size: 1rem;
       font-weight: 500;
-      color: #6b5f4d;
+      color: #3d3929;
+      background: #faf8f5;
       cursor: pointer;
       font-family: inherit;
-      text-align: center;
-      transition: all 0.2s ease;
+      text-align: left;
+      transition: border-color 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .ema-select-btn.active {
-      background: #ffffff;
-      color: #5c5340;
-      box-shadow: 0 2px 4px rgba(92, 83, 64, 0.1);
+    .strategy-select-btn:hover {
+      border-color: #a08c6d;
     }
 
-    .ema-select-btn.open {
-      border-radius: 8px 8px 0 0;
+    .strategy-select-btn.open {
+      border-radius: 10px 10px 0 0;
+      border-color: #a08c6d;
     }
 
-    .ema-select-dropdown {
+    .strategy-select-btn .arrow {
+      font-size: 0.7rem;
+      transition: transform 0.2s ease;
+      color: #9a8d79;
+    }
+
+    .strategy-select-btn.open .arrow {
+      transform: rotate(180deg);
+    }
+
+    .strategy-select-dropdown {
       display: none;
       position: absolute;
       top: 100%;
       left: 0;
       right: 0;
       background: #ffffff;
-      border: 2px solid #e5e0d5;
+      border: 2px solid #a08c6d;
       border-top: none;
       border-radius: 0 0 10px 10px;
-      overflow: hidden;
+      max-height: 320px;
+      overflow-y: auto;
       z-index: 100;
       box-shadow: 0 4px 12px rgba(92, 83, 64, 0.12);
     }
 
-    .ema-select-dropdown.open {
+    .strategy-select-dropdown.open {
       display: block;
     }
 
-    .ema-option {
+    .strategy-option {
       padding: 12px 16px;
       cursor: pointer;
-      text-align: center;
-      font-size: 0.95rem;
-      color: #5c5340;
       transition: background 0.15s ease;
     }
 
-    .ema-option:hover {
+    .strategy-option:hover {
       background: #f0ebe2;
     }
 
-    .ema-option.selected {
+    .strategy-option.selected {
       background: #f0ebe2;
+    }
+
+    .strategy-option .so-name {
       font-weight: 500;
+      color: #5c5340;
+      font-size: 0.95rem;
+    }
+
+    .strategy-option .so-desc {
+      font-size: 0.8rem;
+      color: #9a8d79;
+      margin-top: 2px;
     }
 
     /* Amount Input */
@@ -764,11 +756,6 @@
         font-size: 0.95rem;
       }
 
-      .toggle-btn {
-        padding: 14px 20px;
-        font-size: 1rem;
-      }
-
       .amount-input {
         padding: 16px 16px 16px 40px;
         font-size: 1.2rem;
@@ -835,18 +822,13 @@
       </div>
 
       <div class="input-group">
-        <label>Contribution Style</label>
-        <div class="toggle-container">
-          <button class="toggle-btn active" data-style="dca">Monthly</button>
-          <button class="toggle-btn" data-style="lump">Lump Sum</button>
-          <div class="ema-select-wrapper" id="ema-wrapper">
-            <button class="ema-select-btn" id="ema-select-btn">200 EMA</button>
-            <div class="ema-select-dropdown" id="ema-dropdown">
-              <div class="ema-option" data-value="ema50">50 EMA</div>
-              <div class="ema-option" data-value="ema100">100 EMA</div>
-              <div class="ema-option selected" data-value="ema200">200 EMA</div>
-            </div>
-          </div>
+        <label>Strategy</label>
+        <div class="strategy-select-wrapper">
+          <button class="strategy-select-btn" id="strategy-select-btn">
+            <span id="strategy-btn-text">Monthly DCA</span>
+            <span class="arrow">&#9660;</span>
+          </button>
+          <div class="strategy-select-dropdown" id="strategy-dropdown"></div>
         </div>
       </div>
 
@@ -938,6 +920,18 @@
       { symbol: 'ETH', yahoo: 'ETH-USD', name: 'Ethereum' },
     ];
 
+    // Strategy configuration
+    const STRATEGIES = {
+      dca:          { name: 'Monthly DCA',        desc: 'Buy a fixed amount every month',                   amountLabel: 'Monthly Amount',        amountHint: "Amount you'll invest each month",                          defaultAmount: 500 },
+      lump:         { name: 'Lump Sum',            desc: 'Invest everything at once',                        amountLabel: 'Initial Investment',    amountHint: 'One-time investment amount',                               defaultAmount: 10000 },
+      ema50:        { name: '50 EMA Touch',        desc: 'Buy when price touches 50-day EMA',                amountLabel: 'Buy Amount per Signal', amountHint: 'Amount to invest each time price touches 50 EMA',         defaultAmount: 1000 },
+      ema100:       { name: '100 EMA Touch',       desc: 'Buy when price touches 100-day EMA',               amountLabel: 'Buy Amount per Signal', amountHint: 'Amount to invest each time price touches 100 EMA',        defaultAmount: 1000 },
+      ema200:       { name: '200 EMA Touch',       desc: 'Buy when price touches 200-day EMA',               amountLabel: 'Buy Amount per Signal', amountHint: 'Amount to invest each time price touches 200 EMA',        defaultAmount: 1000 },
+      emaCrossover: { name: 'EMA Crossover',       desc: 'Buy on golden cross (50 EMA crosses above 200)',   amountLabel: 'Buy Amount per Signal', amountHint: 'Amount to invest on each golden cross signal',            defaultAmount: 5000 },
+      rsi:          { name: 'RSI Mean Reversion',  desc: 'Buy when RSI drops below 30 (oversold)',           amountLabel: 'Buy Amount per Signal', amountHint: 'Amount to invest each time RSI signals oversold',         defaultAmount: 1000 },
+      macd:         { name: 'MACD Divergence',     desc: 'Buy on bullish MACD crossover',                    amountLabel: 'Buy Amount per Signal', amountHint: 'Amount to invest on each bullish MACD crossover',         defaultAmount: 1000 },
+    };
+
     // State
     let state = {
       portfolio: [
@@ -954,9 +948,12 @@
     // Cache for ticker data
     const dataCache = {};
 
-    // Pre-fetched data from data.json (populated on first fetchStockData call)
+    // Pre-fetched data
     let bundledDataLoaded = false;
     let bundledDataPromise = null;
+    let dailyDataLoaded = false;
+    let dailyDataPromise = null;
+    let dailyDataCache = {};
 
     async function loadBundledData() {
       try {
@@ -965,15 +962,6 @@
         const json = await res.json();
         if (json.tickers) {
           for (const [yahooTicker, tickerData] of Object.entries(json.tickers)) {
-            const monthlyData = tickerData.monthlyData.map(d => ({
-              date: new Date(d.date),
-              price: d.price
-            }));
-            const dailyData = (tickerData.dailyData || []).map(d => ({
-              date: new Date(d.date + 'T00:00:00Z'),
-              price: d.price
-            }));
-
             dataCache[yahooTicker] = {
               ticker: yahooTicker,
               name: tickerData.name,
@@ -981,15 +969,38 @@
               priceChange: tickerData.priceChange,
               percentChange: tickerData.percentChange,
               currency: tickerData.currency || 'USD',
-              monthlyData,
-              dailyData
+              dailyData: []
             };
           }
         }
       } catch (e) {
-        // data.json not available — will fall back to live API
+        // data.json not available
       }
       bundledDataLoaded = true;
+    }
+
+    async function loadDailyData() {
+      try {
+        const res = await fetch('daily-data.json');
+        if (!res.ok) throw new Error('daily-data.json not found');
+        const json = await res.json();
+        if (json.tickers) {
+          for (const [yahooTicker, entries] of Object.entries(json.tickers)) {
+            const dailyData = entries.map(d => ({
+              date: new Date(d.date + 'T00:00:00Z'),
+              price: d.price
+            }));
+            dailyDataCache[yahooTicker] = dailyData;
+            // Merge into main cache if entry exists
+            if (dataCache[yahooTicker]) {
+              dataCache[yahooTicker].dailyData = dailyData;
+            }
+          }
+        }
+      } catch (e) {
+        // daily-data.json not available
+      }
+      dailyDataLoaded = true;
     }
 
     // DOM Elements
@@ -999,7 +1010,6 @@
     const portfolioListEl = document.getElementById('portfolio-list');
     const allocationFill = document.getElementById('allocation-fill');
     const allocationStatus = document.getElementById('allocation-status');
-    const styleBtns = document.querySelectorAll('.toggle-btn');
     const amountInput = document.getElementById('amount');
     const amountLabel = document.getElementById('amount-label');
     const amountHint = document.getElementById('amount-hint');
@@ -1008,12 +1018,9 @@
     const resultsCard = document.querySelector('.results-card');
     const breakdownToggle = document.getElementById('breakdown-toggle');
     const breakdownList = document.getElementById('breakdown-list');
-
-    // EMA dropdown elements
-    const emaSelectBtn = document.getElementById('ema-select-btn');
-    const emaDropdown = document.getElementById('ema-dropdown');
-    const emaOptions = document.querySelectorAll('.ema-option');
-    let selectedEma = 'ema200';
+    const strategySelectBtn = document.getElementById('strategy-select-btn');
+    const strategyBtnText = document.getElementById('strategy-btn-text');
+    const strategyDropdown = document.getElementById('strategy-dropdown');
 
     // Format currency
     function formatCurrency(value) {
@@ -1058,94 +1065,88 @@
         if (!bundledDataPromise) bundledDataPromise = loadBundledData();
         await bundledDataPromise;
       }
+      if (!dailyDataLoaded) {
+        if (!dailyDataPromise) dailyDataPromise = loadDailyData();
+        await dailyDataPromise;
+      }
 
-      // Check cache (may have been populated from data.json)
-      if (dataCache[yahooTicker]) {
+      // Check cache (may have been populated from bundled data)
+      if (dataCache[yahooTicker] && dataCache[yahooTicker].dailyData && dataCache[yahooTicker].dailyData.length > 0) {
         return dataCache[yahooTicker];
       }
 
-      const historyUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=10y&interval=1mo&includePrePost=false`;
+      // Merge daily data from separate cache if available
+      if (dataCache[yahooTicker] && dailyDataCache[yahooTicker]) {
+        dataCache[yahooTicker].dailyData = dailyDataCache[yahooTicker];
+        return dataCache[yahooTicker];
+      }
+
       const dailyUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=2d&interval=1d&includePrePost=false`;
       const dailyHistoryUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?range=10y&interval=1d&includePrePost=false`;
 
       try {
-        // Fetch all three in parallel
-        const [data, dailyData, dailyHistoryData] = await Promise.all([
-          fetchWithProxy(historyUrl),
+        const [dailyData, dailyHistoryData] = await Promise.all([
           fetchWithProxy(dailyUrl).catch(() => null),
           fetchWithProxy(dailyHistoryUrl).catch(() => null)
         ]);
 
-        if (data.chart && data.chart.result && data.chart.result[0]) {
-          const result = data.chart.result[0];
-          const meta = result.meta;
-          const quotes = result.indicators.quote[0];
-          const timestamps = result.timestamp;
+        let currentPrice = 0;
+        let priceChange = 0;
+        let percentChange = 0;
+        let name = yahooTicker;
 
-          // Build monthly price data, one entry per calendar month (latest wins)
-          const monthlyMap = new Map();
-          for (let i = 0; i < timestamps.length; i++) {
-            if (quotes.close[i] !== null) {
-              const d = new Date(timestamps[i] * 1000);
-              const key = d.getUTCFullYear() + '-' + (d.getUTCMonth() + 1);
-              monthlyMap.set(key, { date: d, price: quotes.close[i] });
+        // Build daily history data
+        let dailyHistoryArr = [];
+        if (dailyHistoryData && dailyHistoryData.chart && dailyHistoryData.chart.result && dailyHistoryData.chart.result[0]) {
+          const dResult = dailyHistoryData.chart.result[0];
+          const meta = dResult.meta;
+          const dQuotes = dResult.indicators.quote[0];
+          const dTimestamps = dResult.timestamp;
+          currentPrice = meta.regularMarketPrice;
+          name = meta.shortName || meta.symbol;
+
+          for (let j = 0; j < dTimestamps.length; j++) {
+            if (dQuotes.close[j] !== null) {
+              dailyHistoryArr.push({
+                date: new Date(dTimestamps[j] * 1000),
+                price: dQuotes.close[j]
+              });
             }
           }
-
-          const currentPrice = meta.regularMarketPrice;
-
-          // Replace last entry's price with live current price
-          const monthlyData = Array.from(monthlyMap.values());
-          if (monthlyData.length > 0) {
-            monthlyData[monthlyData.length - 1].price = currentPrice;
+          // Update last entry with current price
+          if (dailyHistoryArr.length > 0) {
+            dailyHistoryArr[dailyHistoryArr.length - 1].price = currentPrice;
           }
-
-          // Extract daily change from parallel fetch
-          let priceChange = 0;
-          let percentChange = 0;
-          if (dailyData && dailyData.chart && dailyData.chart.result && dailyData.chart.result[0]) {
-            const dailyQuotes = dailyData.chart.result[0].indicators.quote[0];
-            const closes = dailyQuotes.close.filter(c => c !== null);
-            if (closes.length >= 2) {
-              const prevClose = closes[closes.length - 2];
-              priceChange = currentPrice - prevClose;
-              percentChange = (priceChange / prevClose) * 100;
-            }
-          }
-
-          // Build daily history data for EMA calculations
-          let dailyHistoryArr = [];
-          if (dailyHistoryData && dailyHistoryData.chart && dailyHistoryData.chart.result && dailyHistoryData.chart.result[0]) {
-            const dResult = dailyHistoryData.chart.result[0];
-            const dQuotes = dResult.indicators.quote[0];
-            const dTimestamps = dResult.timestamp;
-            for (let j = 0; j < dTimestamps.length; j++) {
-              if (dQuotes.close[j] !== null) {
-                dailyHistoryArr.push({
-                  date: new Date(dTimestamps[j] * 1000),
-                  price: dQuotes.close[j]
-                });
-              }
-            }
-          }
-
-          const tickerData = {
-            ticker: yahooTicker,
-            name: meta.shortName || meta.symbol,
-            currentPrice,
-            priceChange,
-            percentChange,
-            monthlyData,
-            dailyData: dailyHistoryArr,
-            currency: meta.currency || 'USD'
-          };
-
-          // Cache the data
-          dataCache[yahooTicker] = tickerData;
-          return tickerData;
         }
 
-        throw new Error('Invalid data format');
+        // Extract daily change
+        if (dailyData && dailyData.chart && dailyData.chart.result && dailyData.chart.result[0]) {
+          const meta = dailyData.chart.result[0].meta;
+          if (!currentPrice) currentPrice = meta.regularMarketPrice;
+          if (!name || name === yahooTicker) name = meta.shortName || meta.symbol;
+          const dailyQuotes = dailyData.chart.result[0].indicators.quote[0];
+          const closes = dailyQuotes.close.filter(c => c !== null);
+          if (closes.length >= 2) {
+            const prevClose = closes[closes.length - 2];
+            priceChange = currentPrice - prevClose;
+            percentChange = (priceChange / prevClose) * 100;
+          }
+        }
+
+        if (dailyHistoryArr.length === 0) throw new Error('No daily data');
+
+        const tickerData = {
+          ticker: yahooTicker,
+          name,
+          currentPrice,
+          priceChange,
+          percentChange,
+          dailyData: dailyHistoryArr,
+          currency: 'USD'
+        };
+
+        dataCache[yahooTicker] = tickerData;
+        return tickerData;
       } catch (error) {
         console.error('Error fetching stock data:', error);
         return getFallbackData(yahooTicker);
@@ -1160,59 +1161,88 @@
         currentPrice: 0,
         priceChange: 0,
         percentChange: 0,
-        monthlyData: [],
         dailyData: [],
         isFallback: true
       };
     }
 
-    // Backtest DCA strategy with actual historical prices
-    function backtestDCA(monthlyData, monthlyAmount, yearsAgo) {
-      const monthsAgo = yearsAgo * 12;
-      const startIndex = Math.max(0, monthlyData.length - monthsAgo);
-      const relevantData = monthlyData.slice(startIndex);
-
-      if (relevantData.length < 2) {
-        return null;
+    // --- Utility: slice daily data from cutoff ---
+    function sliceDailyFromYearsAgo(dailyData, yearsAgo) {
+      const now = new Date();
+      const cutoffDate = new Date(now);
+      cutoffDate.setFullYear(cutoffDate.getFullYear() - yearsAgo);
+      let startIdx = 0;
+      for (let i = 0; i < dailyData.length; i++) {
+        if (dailyData[i].date >= cutoffDate) {
+          startIdx = i;
+          break;
+        }
       }
+      return dailyData.slice(startIdx);
+    }
 
-      let totalShares = 0;
-      let totalInvested = 0;
-      const portfolioValues = [];
-      const investedValues = [];
-
-      for (let i = 0; i < relevantData.length; i++) {
-        const price = relevantData[i].price;
-
-        // Buy shares each month
-        const sharesBought = monthlyAmount / price;
-        totalShares += sharesBought;
-        totalInvested += monthlyAmount;
-
-        // Record portfolio value at this point
-        const portfolioValue = totalShares * price;
-        portfolioValues.push({
-          date: relevantData[i].date,
-          value: portfolioValue,
-          invested: totalInvested
-        });
-        investedValues.push(totalInvested);
-      }
-
-      const currentPrice = relevantData[relevantData.length - 1].price;
-      const finalValue = totalShares * currentPrice;
-      const profit = finalValue - totalInvested;
-      const returnPercent = ((finalValue - totalInvested) / totalInvested) * 100;
-      const avgCostPerShare = totalInvested / totalShares;
-
-      // Max drawdown from peak portfolio value
+    // --- Max drawdown helper ---
+    function computeMaxDrawdown(portfolioValues) {
       let peak = 0;
       let maxDrawdown = 0;
       for (const pv of portfolioValues) {
         if (pv.value > peak) peak = pv.value;
-        const drawdown = (pv.value - peak) / peak;
-        if (drawdown < maxDrawdown) maxDrawdown = drawdown;
+        if (peak > 0) {
+          const dd = (pv.value - peak) / peak;
+          if (dd < maxDrawdown) maxDrawdown = dd;
+        }
       }
+      return maxDrawdown * 100;
+    }
+
+    // --- Chart sampling utility ---
+    function sampleForChart(portfolioValues, targetPoints = 120) {
+      if (portfolioValues.length <= targetPoints) return portfolioValues;
+      const sampled = [];
+      for (let i = 0; i < targetPoints; i++) {
+        const idx = Math.round((i / (targetPoints - 1)) * (portfolioValues.length - 1));
+        sampled.push(portfolioValues[idx]);
+      }
+      return sampled;
+    }
+
+    // Backtest DCA strategy with daily data
+    function backtestDCA(dailyData, monthlyAmount, yearsAgo) {
+      const relevantData = sliceDailyFromYearsAgo(dailyData, yearsAgo);
+      if (relevantData.length < 2) return null;
+
+      let totalShares = 0;
+      let totalInvested = 0;
+      const portfolioValues = [];
+      let lastBuyMonth = -1;
+      let lastBuyYear = -1;
+
+      for (let i = 0; i < relevantData.length; i++) {
+        const d = relevantData[i].date;
+        const price = relevantData[i].price;
+        const month = d.getUTCMonth();
+        const year = d.getUTCFullYear();
+
+        // Buy on first trading day of each new calendar month
+        if (month !== lastBuyMonth || year !== lastBuyYear) {
+          const sharesBought = monthlyAmount / price;
+          totalShares += sharesBought;
+          totalInvested += monthlyAmount;
+          lastBuyMonth = month;
+          lastBuyYear = year;
+        }
+
+        portfolioValues.push({
+          date: d,
+          value: totalShares * price,
+          invested: totalInvested
+        });
+      }
+
+      const finalPrice = relevantData[relevantData.length - 1].price;
+      const finalValue = totalShares * finalPrice;
+      const profit = finalValue - totalInvested;
+      const returnPercent = ((finalValue - totalInvested) / totalInvested) * 100;
 
       return {
         totalInvested,
@@ -1220,62 +1250,43 @@
         profit,
         returnPercent,
         totalShares,
-        avgCostPerShare,
-        maxDrawdown: maxDrawdown * 100,
+        avgCostPerShare: totalInvested / totalShares,
+        maxDrawdown: computeMaxDrawdown(portfolioValues),
         portfolioValues,
-        investedValues
+        investedValues: portfolioValues.map(v => v.invested)
       };
     }
 
-    // Backtest lump sum strategy with actual historical prices
-    function backtestLumpSum(monthlyData, amount, yearsAgo) {
-      const monthsAgo = yearsAgo * 12;
-      const startIndex = Math.max(0, monthlyData.length - monthsAgo);
-      const relevantData = monthlyData.slice(startIndex);
-
-      if (relevantData.length < 2) {
-        return null;
-      }
+    // Backtest lump sum strategy with daily data
+    function backtestLumpSum(dailyData, amount, yearsAgo) {
+      const relevantData = sliceDailyFromYearsAgo(dailyData, yearsAgo);
+      if (relevantData.length < 2) return null;
 
       const buyPrice = relevantData[0].price;
       const shares = amount / buyPrice;
       const portfolioValues = [];
-      const investedValues = [];
 
       for (let i = 0; i < relevantData.length; i++) {
-        const price = relevantData[i].price;
         portfolioValues.push({
           date: relevantData[i].date,
-          value: shares * price,
+          value: shares * relevantData[i].price,
           invested: amount
         });
-        investedValues.push(amount);
       }
 
-      const currentPrice = relevantData[relevantData.length - 1].price;
-      const finalValue = shares * currentPrice;
-      const profit = finalValue - amount;
-      const returnPercent = ((finalValue - amount) / amount) * 100;
-
-      // Max drawdown from peak portfolio value
-      let peak = 0;
-      let maxDrawdown = 0;
-      for (const pv of portfolioValues) {
-        if (pv.value > peak) peak = pv.value;
-        const drawdown = (pv.value - peak) / peak;
-        if (drawdown < maxDrawdown) maxDrawdown = drawdown;
-      }
+      const finalPrice = relevantData[relevantData.length - 1].price;
+      const finalValue = shares * finalPrice;
 
       return {
         totalInvested: amount,
         finalValue,
-        profit,
-        returnPercent,
+        profit: finalValue - amount,
+        returnPercent: ((finalValue - amount) / amount) * 100,
         totalShares: shares,
         avgCostPerShare: buyPrice,
-        maxDrawdown: maxDrawdown * 100,
+        maxDrawdown: computeMaxDrawdown(portfolioValues),
         portfolioValues,
-        investedValues
+        investedValues: portfolioValues.map(() => amount)
       };
     }
 
@@ -1284,7 +1295,6 @@
       if (dailyData.length < period) return [];
       const multiplier = 2 / (period + 1);
 
-      // Seed with SMA of first N days
       let sum = 0;
       for (let i = 0; i < period; i++) {
         sum += dailyData[i].price;
@@ -1300,141 +1310,161 @@
       return emaValues;
     }
 
-    // Backtest EMA touch strategy
-    function backtestEMA(dailyData, monthlyData, buyAmount, yearsAgo, period = 200) {
+    // Calculate RSI (Wilder's smoothed)
+    function calculateRSI(dailyData, period = 14) {
+      if (dailyData.length < period + 1) return [];
+      const rsiValues = new Array(period).fill(null);
+
+      let avgGain = 0;
+      let avgLoss = 0;
+      for (let i = 1; i <= period; i++) {
+        const change = dailyData[i].price - dailyData[i - 1].price;
+        if (change > 0) avgGain += change;
+        else avgLoss += Math.abs(change);
+      }
+      avgGain /= period;
+      avgLoss /= period;
+
+      const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+      rsiValues.push(avgLoss === 0 ? 100 : 100 - (100 / (1 + rs)));
+
+      for (let i = period + 1; i < dailyData.length; i++) {
+        const change = dailyData[i].price - dailyData[i - 1].price;
+        const gain = change > 0 ? change : 0;
+        const loss = change < 0 ? Math.abs(change) : 0;
+        avgGain = (avgGain * (period - 1) + gain) / period;
+        avgLoss = (avgLoss * (period - 1) + loss) / period;
+        const rs2 = avgLoss === 0 ? 100 : avgGain / avgLoss;
+        rsiValues.push(avgLoss === 0 ? 100 : 100 - (100 / (1 + rs2)));
+      }
+      return rsiValues;
+    }
+
+    // Calculate MACD
+    function calculateMACD(dailyData, fast = 12, slow = 26, signal = 9) {
+      const fastEMA = calculateEMA(dailyData, fast);
+      const slowEMA = calculateEMA(dailyData, slow);
+      if (fastEMA.length === 0 || slowEMA.length === 0) return null;
+
+      // MACD line = fast EMA - slow EMA
+      const macdLine = [];
+      for (let i = 0; i < dailyData.length; i++) {
+        if (fastEMA[i] === null || slowEMA[i] === null) {
+          macdLine.push(null);
+        } else {
+          macdLine.push(fastEMA[i] - slowEMA[i]);
+        }
+      }
+
+      // Signal line = EMA of MACD line
+      // Build temp array of non-null MACD values for EMA calculation
+      const macdNonNull = [];
+      const macdIndices = [];
+      for (let i = 0; i < macdLine.length; i++) {
+        if (macdLine[i] !== null) {
+          macdNonNull.push({ price: macdLine[i] });
+          macdIndices.push(i);
+        }
+      }
+
+      const signalRaw = calculateEMA(macdNonNull, signal);
+      const signalLine = new Array(dailyData.length).fill(null);
+      for (let i = 0; i < signalRaw.length; i++) {
+        if (signalRaw[i] !== null) {
+          signalLine[macdIndices[i]] = signalRaw[i];
+        }
+      }
+
+      // Histogram
+      const histogram = [];
+      for (let i = 0; i < dailyData.length; i++) {
+        if (macdLine[i] !== null && signalLine[i] !== null) {
+          histogram.push(macdLine[i] - signalLine[i]);
+        } else {
+          histogram.push(null);
+        }
+      }
+
+      return { macdLine, signalLine, histogram };
+    }
+
+    // Backtest EMA touch strategy (daily tracking)
+    function backtestEMA(dailyData, buyAmount, yearsAgo, period = 200) {
       if (!dailyData || dailyData.length < period) return null;
 
       const now = new Date();
       const cutoffDate = new Date(now);
       cutoffDate.setFullYear(cutoffDate.getFullYear() - yearsAgo);
 
-      // Find start index with prefetch for EMA warmup (period + 100 days buffer)
       const prefetchDays = period + 100;
       const prefetchDate = new Date(cutoffDate);
       prefetchDate.setDate(prefetchDate.getDate() - prefetchDays);
 
       let prefetchIdx = 0;
       for (let i = 0; i < dailyData.length; i++) {
-        if (dailyData[i].date >= prefetchDate) {
-          prefetchIdx = i;
-          break;
-        }
+        if (dailyData[i].date >= prefetchDate) { prefetchIdx = i; break; }
       }
 
       const slicedDaily = dailyData.slice(prefetchIdx);
       const emaValues = calculateEMA(slicedDaily, period);
-
       if (emaValues.length === 0) return null;
 
-      // Find the actual start index within slicedDaily for our target period
       let rangeStartIdx = 0;
       for (let i = 0; i < slicedDaily.length; i++) {
-        if (slicedDaily[i].date >= cutoffDate) {
-          rangeStartIdx = i;
-          break;
-        }
+        if (slicedDaily[i].date >= cutoffDate) { rangeStartIdx = i; break; }
       }
-
-      // Ensure we have EMA values for the range
       if (rangeStartIdx < 1 || rangeStartIdx >= emaValues.length) return null;
 
       let totalShares = 0;
       let totalInvested = 0;
       let buyCount = 0;
       const buySignals = [];
-
-      // Detect EMA touches and buy
-      for (let i = rangeStartIdx; i < slicedDaily.length; i++) {
-        if (emaValues[i] === null || emaValues[i - 1] === null) continue;
-
-        const prevPrice = slicedDaily[i - 1].price;
-        const prevEMA = emaValues[i - 1];
-        const currentPrice = slicedDaily[i].price;
-        const currentEMA = emaValues[i];
-
-        // Touch: price crosses down to or through the EMA
-        if (prevPrice > prevEMA && currentPrice <= currentEMA) {
-          const sharesBought = buyAmount / currentPrice;
-          totalShares += sharesBought;
-          totalInvested += buyAmount;
-          buyCount++;
-          buySignals.push({ date: slicedDaily[i].date, price: currentPrice });
-        }
-      }
-
-      if (buyCount === 0) {
-        return { noSignals: true };
-      }
-
-      // Sample portfolio values at monthly intervals for chart consistency
       const portfolioValues = [];
-      const investedValues = [];
 
-      // Use monthly data within the range for sampling
-      const monthCutoff = cutoffDate;
-      let runningShares = 0;
-      let runningInvested = 0;
-      let buySignalIdx = 0;
+      for (let i = rangeStartIdx; i < slicedDaily.length; i++) {
+        if (emaValues[i] !== null && emaValues[i - 1] !== null) {
+          const prevPrice = slicedDaily[i - 1].price;
+          const prevEMA = emaValues[i - 1];
+          const currentPrice = slicedDaily[i].price;
+          const currentEMA = emaValues[i];
 
-      // Get monthly dates within range
-      const relevantMonthly = monthlyData.filter(m => m.date >= monthCutoff);
-      if (relevantMonthly.length === 0) return null;
-
-      for (const month of relevantMonthly) {
-        // Count all buy signals up to this month's date
-        while (buySignalIdx < buySignals.length && buySignals[buySignalIdx].date <= month.date) {
-          runningShares += buyAmount / buySignals[buySignalIdx].price;
-          runningInvested += buyAmount;
-          buySignalIdx++;
+          if (prevPrice > prevEMA && currentPrice <= currentEMA) {
+            totalShares += buyAmount / currentPrice;
+            totalInvested += buyAmount;
+            buyCount++;
+            buySignals.push({ date: slicedDaily[i].date, price: currentPrice });
+          }
         }
 
         portfolioValues.push({
-          date: month.date,
-          value: runningShares * month.price,
-          invested: runningInvested
+          date: slicedDaily[i].date,
+          value: totalShares * slicedDaily[i].price,
+          invested: totalInvested
         });
-        investedValues.push(runningInvested);
       }
 
-      const lastPrice = relevantMonthly[relevantMonthly.length - 1].price;
+      if (buyCount === 0) return { noSignals: true };
+
+      const lastPrice = slicedDaily[slicedDaily.length - 1].price;
       const finalValue = totalShares * lastPrice;
-      const profit = finalValue - totalInvested;
-      const returnPercent = totalInvested > 0 ? ((finalValue - totalInvested) / totalInvested) * 100 : 0;
-      const avgCostPerShare = totalInvested / totalShares;
 
-      // Max drawdown
-      let peak = 0;
-      let maxDrawdown = 0;
-      for (const pv of portfolioValues) {
-        if (pv.value > peak) peak = pv.value;
-        if (peak > 0) {
-          const drawdown = (pv.value - peak) / peak;
-          if (drawdown < maxDrawdown) maxDrawdown = drawdown;
-        }
-      }
-
-      // Build EMA overlay data (daily prices and EMA values within range for chart)
       const chartEmaData = [];
       for (let i = rangeStartIdx; i < slicedDaily.length; i++) {
         if (emaValues[i] !== null) {
-          chartEmaData.push({
-            date: slicedDaily[i].date,
-            price: slicedDaily[i].price,
-            ema: emaValues[i]
-          });
+          chartEmaData.push({ date: slicedDaily[i].date, price: slicedDaily[i].price, ema: emaValues[i] });
         }
       }
 
       return {
         totalInvested,
         finalValue,
-        profit,
-        returnPercent,
+        profit: finalValue - totalInvested,
+        returnPercent: totalInvested > 0 ? ((finalValue - totalInvested) / totalInvested) * 100 : 0,
         totalShares,
-        avgCostPerShare,
-        maxDrawdown: maxDrawdown * 100,
+        avgCostPerShare: totalInvested / totalShares,
+        maxDrawdown: computeMaxDrawdown(portfolioValues),
         portfolioValues,
-        investedValues,
+        investedValues: portfolioValues.map(v => v.invested),
         buyCount,
         buySignals,
         emaData: chartEmaData,
@@ -1443,20 +1473,295 @@
       };
     }
 
+    // Backtest EMA Crossover (golden cross: short EMA crosses above long EMA)
+    function backtestEMACrossover(dailyData, buyAmount, yearsAgo, shortPeriod = 50, longPeriod = 200) {
+      if (!dailyData || dailyData.length < longPeriod) return null;
+
+      const now = new Date();
+      const cutoffDate = new Date(now);
+      cutoffDate.setFullYear(cutoffDate.getFullYear() - yearsAgo);
+
+      const prefetchDays = longPeriod + 100;
+      const prefetchDate = new Date(cutoffDate);
+      prefetchDate.setDate(prefetchDate.getDate() - prefetchDays);
+
+      let prefetchIdx = 0;
+      for (let i = 0; i < dailyData.length; i++) {
+        if (dailyData[i].date >= prefetchDate) { prefetchIdx = i; break; }
+      }
+
+      const slicedDaily = dailyData.slice(prefetchIdx);
+      const shortEMA = calculateEMA(slicedDaily, shortPeriod);
+      const longEMA = calculateEMA(slicedDaily, longPeriod);
+      if (shortEMA.length === 0 || longEMA.length === 0) return null;
+
+      let rangeStartIdx = 0;
+      for (let i = 0; i < slicedDaily.length; i++) {
+        if (slicedDaily[i].date >= cutoffDate) { rangeStartIdx = i; break; }
+      }
+      if (rangeStartIdx < 1 || rangeStartIdx >= shortEMA.length || rangeStartIdx >= longEMA.length) return null;
+
+      let totalShares = 0;
+      let totalInvested = 0;
+      let buyCount = 0;
+      const buySignals = [];
+      const portfolioValues = [];
+
+      for (let i = rangeStartIdx; i < slicedDaily.length; i++) {
+        if (shortEMA[i] !== null && longEMA[i] !== null && shortEMA[i - 1] !== null && longEMA[i - 1] !== null) {
+          // Golden cross: short was below long, now above
+          if (shortEMA[i - 1] <= longEMA[i - 1] && shortEMA[i] > longEMA[i]) {
+            totalShares += buyAmount / slicedDaily[i].price;
+            totalInvested += buyAmount;
+            buyCount++;
+            buySignals.push({ date: slicedDaily[i].date, price: slicedDaily[i].price });
+          }
+        }
+
+        portfolioValues.push({
+          date: slicedDaily[i].date,
+          value: totalShares * slicedDaily[i].price,
+          invested: totalInvested
+        });
+      }
+
+      if (buyCount === 0) return { noSignals: true };
+
+      const lastPrice = slicedDaily[slicedDaily.length - 1].price;
+      const finalValue = totalShares * lastPrice;
+
+      // Build overlay data with both EMAs
+      const chartEmaData = [];
+      for (let i = rangeStartIdx; i < slicedDaily.length; i++) {
+        if (shortEMA[i] !== null && longEMA[i] !== null) {
+          chartEmaData.push({
+            date: slicedDaily[i].date,
+            price: slicedDaily[i].price,
+            emaShort: shortEMA[i],
+            emaLong: longEMA[i]
+          });
+        }
+      }
+
+      return {
+        totalInvested,
+        finalValue,
+        profit: finalValue - totalInvested,
+        returnPercent: totalInvested > 0 ? ((finalValue - totalInvested) / totalInvested) * 100 : 0,
+        totalShares,
+        avgCostPerShare: totalInvested / totalShares,
+        maxDrawdown: computeMaxDrawdown(portfolioValues),
+        portfolioValues,
+        investedValues: portfolioValues.map(v => v.invested),
+        buyCount,
+        buySignals,
+        emaData: chartEmaData,
+        isEmaCrossover: true
+      };
+    }
+
+    // Backtest RSI Mean Reversion
+    function backtestRSI(dailyData, buyAmount, yearsAgo, period = 14, threshold = 30) {
+      if (!dailyData || dailyData.length < period + 1) return null;
+
+      const now = new Date();
+      const cutoffDate = new Date(now);
+      cutoffDate.setFullYear(cutoffDate.getFullYear() - yearsAgo);
+
+      const prefetchDays = period + 50;
+      const prefetchDate = new Date(cutoffDate);
+      prefetchDate.setDate(prefetchDate.getDate() - prefetchDays);
+
+      let prefetchIdx = 0;
+      for (let i = 0; i < dailyData.length; i++) {
+        if (dailyData[i].date >= prefetchDate) { prefetchIdx = i; break; }
+      }
+
+      const slicedDaily = dailyData.slice(prefetchIdx);
+      const rsiValues = calculateRSI(slicedDaily, period);
+      if (rsiValues.length === 0) return null;
+
+      let rangeStartIdx = 0;
+      for (let i = 0; i < slicedDaily.length; i++) {
+        if (slicedDaily[i].date >= cutoffDate) { rangeStartIdx = i; break; }
+      }
+      if (rangeStartIdx < 1 || rangeStartIdx >= rsiValues.length) return null;
+
+      let totalShares = 0;
+      let totalInvested = 0;
+      let buyCount = 0;
+      const buySignals = [];
+      const portfolioValues = [];
+      let cooldown = 0;
+
+      for (let i = rangeStartIdx; i < slicedDaily.length; i++) {
+        if (cooldown > 0) cooldown--;
+
+        if (rsiValues[i] !== null && rsiValues[i - 1] !== null && cooldown === 0) {
+          // Buy when RSI first crosses below threshold
+          if (rsiValues[i - 1] >= threshold && rsiValues[i] < threshold) {
+            totalShares += buyAmount / slicedDaily[i].price;
+            totalInvested += buyAmount;
+            buyCount++;
+            buySignals.push({ date: slicedDaily[i].date, price: slicedDaily[i].price });
+            cooldown = 5; // 5-day cooldown between signals
+          }
+        }
+
+        portfolioValues.push({
+          date: slicedDaily[i].date,
+          value: totalShares * slicedDaily[i].price,
+          invested: totalInvested
+        });
+      }
+
+      if (buyCount === 0) return { noSignals: true };
+
+      const lastPrice = slicedDaily[slicedDaily.length - 1].price;
+      const finalValue = totalShares * lastPrice;
+
+      // Build RSI overlay data
+      const chartRsiData = [];
+      for (let i = rangeStartIdx; i < slicedDaily.length; i++) {
+        if (rsiValues[i] !== null) {
+          chartRsiData.push({
+            date: slicedDaily[i].date,
+            price: slicedDaily[i].price,
+            rsi: rsiValues[i]
+          });
+        }
+      }
+
+      return {
+        totalInvested,
+        finalValue,
+        profit: finalValue - totalInvested,
+        returnPercent: totalInvested > 0 ? ((finalValue - totalInvested) / totalInvested) * 100 : 0,
+        totalShares,
+        avgCostPerShare: totalInvested / totalShares,
+        maxDrawdown: computeMaxDrawdown(portfolioValues),
+        portfolioValues,
+        investedValues: portfolioValues.map(v => v.invested),
+        buyCount,
+        buySignals,
+        rsiData: chartRsiData,
+        isRsi: true
+      };
+    }
+
+    // Backtest MACD Divergence
+    function backtestMACD(dailyData, buyAmount, yearsAgo, fast = 12, slow = 26, signal = 9) {
+      if (!dailyData || dailyData.length < slow + signal) return null;
+
+      const now = new Date();
+      const cutoffDate = new Date(now);
+      cutoffDate.setFullYear(cutoffDate.getFullYear() - yearsAgo);
+
+      const prefetchDays = slow + signal + 50;
+      const prefetchDate = new Date(cutoffDate);
+      prefetchDate.setDate(prefetchDate.getDate() - prefetchDays);
+
+      let prefetchIdx = 0;
+      for (let i = 0; i < dailyData.length; i++) {
+        if (dailyData[i].date >= prefetchDate) { prefetchIdx = i; break; }
+      }
+
+      const slicedDaily = dailyData.slice(prefetchIdx);
+      const macdResult = calculateMACD(slicedDaily, fast, slow, signal);
+      if (!macdResult) return null;
+
+      const { macdLine, signalLine } = macdResult;
+
+      let rangeStartIdx = 0;
+      for (let i = 0; i < slicedDaily.length; i++) {
+        if (slicedDaily[i].date >= cutoffDate) { rangeStartIdx = i; break; }
+      }
+      if (rangeStartIdx < 1 || rangeStartIdx >= macdLine.length) return null;
+
+      let totalShares = 0;
+      let totalInvested = 0;
+      let buyCount = 0;
+      const buySignals = [];
+      const portfolioValues = [];
+
+      for (let i = rangeStartIdx; i < slicedDaily.length; i++) {
+        if (macdLine[i] !== null && signalLine[i] !== null && macdLine[i - 1] !== null && signalLine[i - 1] !== null) {
+          // Bullish crossover: MACD crosses above signal
+          if (macdLine[i - 1] <= signalLine[i - 1] && macdLine[i] > signalLine[i]) {
+            totalShares += buyAmount / slicedDaily[i].price;
+            totalInvested += buyAmount;
+            buyCount++;
+            buySignals.push({ date: slicedDaily[i].date, price: slicedDaily[i].price });
+          }
+        }
+
+        portfolioValues.push({
+          date: slicedDaily[i].date,
+          value: totalShares * slicedDaily[i].price,
+          invested: totalInvested
+        });
+      }
+
+      if (buyCount === 0) return { noSignals: true };
+
+      const lastPrice = slicedDaily[slicedDaily.length - 1].price;
+      const finalValue = totalShares * lastPrice;
+
+      // Build MACD overlay data
+      const chartMacdData = [];
+      for (let i = rangeStartIdx; i < slicedDaily.length; i++) {
+        if (macdLine[i] !== null && signalLine[i] !== null) {
+          chartMacdData.push({
+            date: slicedDaily[i].date,
+            price: slicedDaily[i].price,
+            macd: macdLine[i],
+            signal: signalLine[i]
+          });
+        }
+      }
+
+      return {
+        totalInvested,
+        finalValue,
+        profit: finalValue - totalInvested,
+        returnPercent: totalInvested > 0 ? ((finalValue - totalInvested) / totalInvested) * 100 : 0,
+        totalShares,
+        avgCostPerShare: totalInvested / totalShares,
+        maxDrawdown: computeMaxDrawdown(portfolioValues),
+        portfolioValues,
+        investedValues: portfolioValues.map(v => v.invested),
+        buyCount,
+        buySignals,
+        macdData: chartMacdData,
+        isMacd: true
+      };
+    }
+
     // Run backtest for a single ticker entry
     function backtestSingle(entry, amount) {
       const data = entry.data;
-      if (!data || !data.monthlyData || data.monthlyData.length === 0) return null;
+      if (!data || !data.dailyData || data.dailyData.length === 0) return null;
 
-      if (state.style === 'dca') {
-        return backtestDCA(data.monthlyData, amount, state.years);
-      } else if (state.style === 'lump') {
-        return backtestLumpSum(data.monthlyData, amount, state.years);
-      } else if (state.style.startsWith('ema')) {
-        const period = parseInt(state.style.replace('ema', ''));
-        return backtestEMA(data.dailyData, data.monthlyData, amount, state.years, period);
+      switch (state.style) {
+        case 'dca':
+          return backtestDCA(data.dailyData, amount, state.years);
+        case 'lump':
+          return backtestLumpSum(data.dailyData, amount, state.years);
+        case 'ema50':
+          return backtestEMA(data.dailyData, amount, state.years, 50);
+        case 'ema100':
+          return backtestEMA(data.dailyData, amount, state.years, 100);
+        case 'ema200':
+          return backtestEMA(data.dailyData, amount, state.years, 200);
+        case 'emaCrossover':
+          return backtestEMACrossover(data.dailyData, amount, state.years);
+        case 'rsi':
+          return backtestRSI(data.dailyData, amount, state.years);
+        case 'macd':
+          return backtestMACD(data.dailyData, amount, state.years);
+        default:
+          return null;
       }
-      return null;
     }
 
     // Calculate aggregate portfolio results
@@ -1486,8 +1791,6 @@
         if (result && !result.noSignals) {
           anyData = true;
           allNoSignals = false;
-        } else if (result && result.noSignals) {
-          // at least one has noSignals
         }
       }
 
@@ -1527,7 +1830,6 @@
         aggregateValues.push({ date, value: sumValue, invested: sumInvested });
       }
 
-      // Sum final totals
       for (const ptr of perTickerResults) {
         if (ptr.result && !ptr.result.noSignals) {
           aggregateTotalInvested += ptr.result.totalInvested;
@@ -1538,30 +1840,22 @@
       const profit = aggregateFinalValue - aggregateTotalInvested;
       const returnPercent = aggregateTotalInvested > 0 ? ((aggregateFinalValue - aggregateTotalInvested) / aggregateTotalInvested) * 100 : 0;
 
-      // Compute aggregate max drawdown from combined curve
-      let peak = 0;
-      let maxDrawdown = 0;
-      for (const pv of aggregateValues) {
-        if (pv.value > peak) peak = pv.value;
-        if (peak > 0) {
-          const dd = (pv.value - peak) / peak;
-          if (dd < maxDrawdown) maxDrawdown = dd;
-        }
-      }
+      // Aggregate max drawdown
+      const maxDrawdown = computeMaxDrawdown(aggregateValues);
 
-      // For single-ticker portfolios, pass through EMA data
-      let emaData = null;
-      let isEma = false;
-      let emaPeriod = null;
-      let buySignals = null;
-      let buyCount = null;
-      if (portfolio.length === 1 && perTickerResults[0].result && perTickerResults[0].result.isEma) {
+      // For single-ticker portfolios, pass through overlay data
+      let overlayData = {};
+      if (portfolio.length === 1 && perTickerResults[0].result) {
         const r = perTickerResults[0].result;
-        emaData = r.emaData;
-        isEma = true;
-        emaPeriod = r.emaPeriod;
-        buySignals = r.buySignals;
-        buyCount = r.buyCount;
+        if (r.isEma) {
+          overlayData = { emaData: r.emaData, isEma: true, emaPeriod: r.emaPeriod, buySignals: r.buySignals, buyCount: r.buyCount };
+        } else if (r.isEmaCrossover) {
+          overlayData = { emaData: r.emaData, isEmaCrossover: true, buySignals: r.buySignals, buyCount: r.buyCount };
+        } else if (r.isRsi) {
+          overlayData = { rsiData: r.rsiData, isRsi: true, buySignals: r.buySignals, buyCount: r.buyCount };
+        } else if (r.isMacd) {
+          overlayData = { macdData: r.macdData, isMacd: true, buySignals: r.buySignals, buyCount: r.buyCount };
+        }
       }
 
       return {
@@ -1569,14 +1863,10 @@
         finalValue: aggregateFinalValue,
         profit,
         returnPercent,
-        maxDrawdown: maxDrawdown * 100,
+        maxDrawdown,
         portfolioValues: aggregateValues,
         perTickerResults,
-        emaData,
-        isEma,
-        emaPeriod,
-        buySignals,
-        buyCount
+        ...overlayData
       };
     }
 
@@ -1706,35 +1996,28 @@
         document.getElementById('final-value').textContent = results && results.noSignals ? '$0' : (state.portfolio.length === 0 ? '-' : 'No data');
         document.getElementById('max-drawdown').textContent = '-';
         document.getElementById('total-return').textContent = '-';
-        document.getElementById('profit-text').innerHTML = results && results.noSignals ? 'No EMA touch signals in this period' : '';
+        document.getElementById('profit-text').innerHTML = results && results.noSignals ? 'No signals in this period' : '';
         drawChart(null);
         updateChartLegend(null);
         renderBreakdown(results ? results.perTickerResults : null);
         return;
       }
 
-      // Total contributed
       document.getElementById('total-contributed').textContent = formatCurrency(results.totalInvested);
-
-      // Final value
       document.getElementById('final-value').textContent = formatCurrency(results.finalValue);
 
-      // Profit text with return %
       const profitSign = results.profit >= 0 ? '+' : '';
       const returnClass = results.returnPercent >= 0 ? 'positive' : 'negative';
       document.getElementById('profit-text').innerHTML = `Profit: ${profitSign}${formatCurrency(results.profit)} <span class="${returnClass}">(${formatPercent(results.returnPercent)})</span>`;
 
-      // Max drawdown
       const drawdownEl = document.getElementById('max-drawdown');
       drawdownEl.textContent = results.maxDrawdown.toFixed(1) + '%';
       drawdownEl.className = 'result-value negative';
 
-      // Total return
       const totalReturnEl = document.getElementById('total-return');
       totalReturnEl.textContent = formatPercent(results.returnPercent);
       totalReturnEl.className = `result-value ${results.returnPercent >= 0 ? 'positive' : 'negative'}`;
 
-      // Update chart legend and draw chart
       updateChartLegend(results);
       drawChart(results);
       renderBreakdown(results.perTickerResults);
@@ -1796,39 +2079,87 @@
     // Update chart legend based on strategy mode
     function updateChartLegend(results) {
       const legend = document.querySelector('.chart-legend');
-      if (results && results.isEma && state.portfolio.length === 1) {
-        const emaPeriod = results.emaPeriod || 200;
-        legend.innerHTML = `
-          <div class="legend-item">
-            <div class="legend-dot typical"></div>
-            <span>Portfolio Value</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot" style="background: #d4cfc4;"></div>
-            <span>Total Invested</span>
-          </div>
+      const baseLegend = `
+        <div class="legend-item">
+          <div class="legend-dot typical"></div>
+          <span>Portfolio Value</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #d4cfc4;"></div>
+          <span>Total Invested</span>
+        </div>`;
+
+      if (!results || state.portfolio.length !== 1) {
+        legend.innerHTML = baseLegend;
+        return;
+      }
+
+      if (results.isEma) {
+        legend.innerHTML = baseLegend + `
           <div class="legend-item">
             <div class="legend-dot" style="background: #8b9dc3;"></div>
             <span>Stock Price</span>
           </div>
           <div class="legend-item">
             <div class="legend-dot" style="background: #c4713b;"></div>
-            <span>${emaPeriod} EMA</span>
+            <span>${results.emaPeriod} EMA</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #5a7a5a;"></div>
+            <span>Buy Signal</span>
+          </div>`;
+      } else if (results.isEmaCrossover) {
+        legend.innerHTML = baseLegend + `
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #8b9dc3;"></div>
+            <span>Stock Price</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #c4713b;"></div>
+            <span>50 EMA</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #7a5c8a;"></div>
+            <span>200 EMA</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #5a7a5a;"></div>
+            <span>Buy Signal</span>
+          </div>`;
+      } else if (results.isRsi) {
+        legend.innerHTML = baseLegend + `
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #8b9dc3;"></div>
+            <span>Stock Price</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #c4713b;"></div>
+            <span>RSI(14)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #5a7a5a;"></div>
+            <span>Buy Signal</span>
+          </div>`;
+      } else if (results.isMacd) {
+        legend.innerHTML = baseLegend + `
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #8b9dc3;"></div>
+            <span>Stock Price</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #c4713b;"></div>
+            <span>MACD</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #7a5c8a;"></div>
+            <span>Signal</span>
           </div>
           <div class="legend-item">
             <div class="legend-dot" style="background: #5a7a5a;"></div>
             <span>Buy Signal</span>
           </div>`;
       } else {
-        legend.innerHTML = `
-          <div class="legend-item">
-            <div class="legend-dot typical"></div>
-            <span>Portfolio Value</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot" style="background: #d4cfc4;"></div>
-            <span>Total Invested</span>
-          </div>`;
+        legend.innerHTML = baseLegend;
       }
     }
 
@@ -1837,7 +2168,6 @@
       const canvas = document.getElementById('chart');
       const ctx = canvas.getContext('2d');
 
-      // Set actual canvas size for crisp rendering
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       const height = rect.height || 200;
@@ -1850,7 +2180,6 @@
       const chartWidth = width - padding.left - padding.right;
       const chartHeight = height - padding.top - padding.bottom;
 
-      // Clear canvas
       ctx.clearRect(0, 0, width, height);
 
       if (!results || !results.portfolioValues || results.portfolioValues.length === 0) {
@@ -1861,19 +2190,18 @@
         return;
       }
 
-      const values = results.portfolioValues;
+      // Sample for performance
+      const values = sampleForChart(results.portfolioValues);
       const allValues = values.map(v => v.value).concat(values.map(v => v.invested));
       const maxValue = Math.max(...allValues);
       const minValue = 0;
 
-      // Scale functions
       const scaleX = (i) => padding.left + (i / (values.length - 1)) * chartWidth;
       const scaleY = (v) => padding.top + chartHeight - ((v - minValue) / (maxValue - minValue)) * chartHeight;
 
-      // Draw grid lines
+      // Grid lines
       ctx.strokeStyle = '#e5e0d5';
       ctx.lineWidth = 1;
-
       for (let i = 0; i <= 4; i++) {
         const y = padding.top + (i / 4) * chartHeight;
         ctx.beginPath();
@@ -1882,22 +2210,20 @@
         ctx.stroke();
       }
 
-      // Draw Y-axis labels
+      // Y-axis labels
       ctx.fillStyle = '#9a8d79';
       ctx.font = '11px "Times New Roman", Times, serif';
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
-
       for (let i = 0; i <= 4; i++) {
         const value = minValue + ((4 - i) / 4) * (maxValue - minValue);
         const y = padding.top + (i / 4) * chartHeight;
         ctx.fillText(formatCurrency(value), padding.left - 8, y);
       }
 
-      // Draw X-axis labels (dates)
+      // X-axis labels
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-
       const labelCount = Math.min(5, values.length);
       for (let i = 0; i < labelCount; i++) {
         const idx = Math.floor((i / (labelCount - 1)) * (values.length - 1));
@@ -1907,39 +2233,31 @@
         ctx.fillText(label, x, height - padding.bottom + 8);
       }
 
-      // Draw invested line (dashed)
+      // Invested line (dashed)
       ctx.strokeStyle = '#d4cfc4';
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 5]);
       ctx.beginPath();
-
       values.forEach((v, i) => {
         const x = scaleX(i);
         const y = scaleY(v.invested);
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
       });
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Draw portfolio value line
+      // Portfolio value line
       ctx.strokeStyle = '#a08c6d';
       ctx.lineWidth = 2.5;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.beginPath();
-
       values.forEach((v, i) => {
         const x = scaleX(i);
         const y = scaleY(v.value);
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
       });
       ctx.stroke();
 
@@ -1948,64 +2266,213 @@
       values.forEach((v, i) => {
         const x = scaleX(i);
         const y = scaleY(v.value);
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
       });
       for (let i = values.length - 1; i >= 0; i--) {
-        const x = scaleX(i);
-        const y = scaleY(values[i].invested);
-        ctx.lineTo(x, y);
+        ctx.lineTo(scaleX(i), scaleY(values[i].invested));
       }
       ctx.closePath();
-
-      const isProfit = results.returnPercent >= 0;
-      ctx.fillStyle = isProfit ? 'rgba(90, 122, 90, 0.15)' : 'rgba(139, 90, 90, 0.15)';
+      ctx.fillStyle = results.returnPercent >= 0 ? 'rgba(90, 122, 90, 0.15)' : 'rgba(139, 90, 90, 0.15)';
       ctx.fill();
 
-      // Draw EMA overlay only for single-ticker portfolios
-      if (results.isEma && results.emaData && results.emaData.length > 0 && state.portfolio.length === 1) {
-        const emaData = results.emaData;
+      // --- Overlays (single-ticker only) ---
+      if (state.portfolio.length !== 1) return;
 
-        // Compute secondary Y-scale for price/EMA
-        let priceMin = Infinity, priceMax = -Infinity;
-        for (const d of emaData) {
-          if (d.price < priceMin) priceMin = d.price;
-          if (d.price > priceMax) priceMax = d.price;
-          if (d.ema < priceMin) priceMin = d.ema;
-          if (d.ema > priceMax) priceMax = d.ema;
+      // Helper to draw sampled overlay line
+      function drawOverlayLine(data, getY, color, dashed) {
+        const sampled = sampleForChart(data);
+        const oScaleX = (i) => padding.left + (i / (sampled.length - 1)) * chartWidth;
+
+        let oMin = Infinity, oMax = -Infinity;
+        for (const d of sampled) {
+          const v = getY(d);
+          if (v < oMin) oMin = v;
+          if (v > oMax) oMax = v;
         }
-        // Add 5% padding
-        const priceRange = priceMax - priceMin;
-        priceMin -= priceRange * 0.05;
-        priceMax += priceRange * 0.05;
+        const range = oMax - oMin;
+        oMin -= range * 0.05;
+        oMax += range * 0.05;
+        const oScaleY = (v) => padding.top + chartHeight - ((v - oMin) / (oMax - oMin)) * chartHeight;
 
-        const scaleEmaX = (i) => padding.left + (i / (emaData.length - 1)) * chartWidth;
-        const scaleEmaY = (v) => padding.top + chartHeight - ((v - priceMin) / (priceMax - priceMin)) * chartHeight;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        if (dashed) ctx.setLineDash([6, 4]);
+        else ctx.setLineDash([]);
+        ctx.beginPath();
+        for (let i = 0; i < sampled.length; i++) {
+          const x = oScaleX(i);
+          const y = oScaleY(getY(sampled[i]));
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+        return { oScaleX, oScaleY, sampled, oMin, oMax };
+      }
 
-        // Draw stock price line (muted blue)
+      // Helper for dual-scale overlay (price + indicator on same scale)
+      function drawPriceOverlay(data, getPrice, extras) {
+        const sampled = sampleForChart(data);
+        let pMin = Infinity, pMax = -Infinity;
+        for (const d of sampled) {
+          const p = getPrice(d);
+          if (p < pMin) pMin = p;
+          if (p > pMax) pMax = p;
+          for (const fn of extras) {
+            const v = fn(d);
+            if (v < pMin) pMin = v;
+            if (v > pMax) pMax = v;
+          }
+        }
+        const range = pMax - pMin;
+        pMin -= range * 0.05;
+        pMax += range * 0.05;
+
+        const oScaleX = (i) => padding.left + (i / (sampled.length - 1)) * chartWidth;
+        const oScaleY = (v) => padding.top + chartHeight - ((v - pMin) / (pMax - pMin)) * chartHeight;
+
+        // Stock price
         ctx.strokeStyle = '#8b9dc3';
         ctx.lineWidth = 1.5;
         ctx.setLineDash([]);
         ctx.beginPath();
-        for (let i = 0; i < emaData.length; i++) {
-          const x = scaleEmaX(i);
-          const y = scaleEmaY(emaData[i].price);
+        for (let i = 0; i < sampled.length; i++) {
+          const x = oScaleX(i);
+          const y = oScaleY(getPrice(sampled[i]));
           if (i === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
         ctx.stroke();
 
-        // Draw EMA line (warm orange, dashed)
+        return { oScaleX, oScaleY, sampled };
+      }
+
+      // EMA Touch overlay
+      if (results.isEma && results.emaData && results.emaData.length > 0) {
+        const { oScaleX, oScaleY, sampled } = drawPriceOverlay(results.emaData, d => d.price, [d => d.ema]);
+
+        // EMA line (dashed orange)
         ctx.strokeStyle = '#c4713b';
         ctx.lineWidth = 1.5;
         ctx.setLineDash([6, 4]);
         ctx.beginPath();
-        for (let i = 0; i < emaData.length; i++) {
-          const x = scaleEmaX(i);
-          const y = scaleEmaY(emaData[i].ema);
+        for (let i = 0; i < sampled.length; i++) {
+          const x = oScaleX(i);
+          const y = oScaleY(sampled[i].ema);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // EMA Crossover overlay
+      if (results.isEmaCrossover && results.emaData && results.emaData.length > 0) {
+        const { oScaleX, oScaleY, sampled } = drawPriceOverlay(results.emaData, d => d.price, [d => d.emaShort, d => d.emaLong]);
+
+        // Short EMA (orange)
+        ctx.strokeStyle = '#c4713b';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        for (let i = 0; i < sampled.length; i++) {
+          const x = oScaleX(i);
+          const y = oScaleY(sampled[i].emaShort);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Long EMA (purple, dashed)
+        ctx.strokeStyle = '#7a5c8a';
+        ctx.beginPath();
+        for (let i = 0; i < sampled.length; i++) {
+          const x = oScaleX(i);
+          const y = oScaleY(sampled[i].emaLong);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // RSI overlay
+      if (results.isRsi && results.rsiData && results.rsiData.length > 0) {
+        // Price line
+        drawPriceOverlay(results.rsiData, d => d.price, []);
+
+        // RSI on its own scale (0-100)
+        const sampled = sampleForChart(results.rsiData);
+        const oScaleX = (i) => padding.left + (i / (sampled.length - 1)) * chartWidth;
+        const oScaleY = (v) => padding.top + chartHeight - ((v - 0) / (100 - 0)) * chartHeight;
+
+        // RSI line
+        ctx.strokeStyle = '#c4713b';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        for (let i = 0; i < sampled.length; i++) {
+          const x = oScaleX(i);
+          const y = oScaleY(sampled[i].rsi);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Threshold line at RSI 30
+        ctx.strokeStyle = 'rgba(139, 90, 90, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        const threshY = oScaleY(30);
+        ctx.beginPath();
+        ctx.moveTo(padding.left, threshY);
+        ctx.lineTo(width - padding.right, threshY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // MACD overlay
+      if (results.isMacd && results.macdData && results.macdData.length > 0) {
+        // Price line
+        drawPriceOverlay(results.macdData, d => d.price, []);
+
+        // MACD and signal on their own scale
+        const sampled = sampleForChart(results.macdData);
+        let mMin = Infinity, mMax = -Infinity;
+        for (const d of sampled) {
+          if (d.macd < mMin) mMin = d.macd;
+          if (d.macd > mMax) mMax = d.macd;
+          if (d.signal < mMin) mMin = d.signal;
+          if (d.signal > mMax) mMax = d.signal;
+        }
+        const range = mMax - mMin;
+        mMin -= range * 0.05;
+        mMax += range * 0.05;
+
+        const oScaleX = (i) => padding.left + (i / (sampled.length - 1)) * chartWidth;
+        const oScaleY = (v) => padding.top + chartHeight - ((v - mMin) / (mMax - mMin)) * chartHeight;
+
+        // MACD line
+        ctx.strokeStyle = '#c4713b';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        for (let i = 0; i < sampled.length; i++) {
+          const x = oScaleX(i);
+          const y = oScaleY(sampled[i].macd);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Signal line (purple, dashed)
+        ctx.strokeStyle = '#7a5c8a';
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        for (let i = 0; i < sampled.length; i++) {
+          const x = oScaleX(i);
+          const y = oScaleY(sampled[i].signal);
           if (i === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
@@ -2111,98 +2578,64 @@
       breakdownList.classList.toggle('open');
     });
 
-    // --- Other event listeners ---
-    styleBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        styleBtns.forEach(b => b.classList.remove('active'));
-        emaSelectBtn.classList.remove('active');
-        emaDropdown.classList.remove('open');
-        emaSelectBtn.classList.remove('open');
-        btn.classList.add('active');
-        state.style = btn.dataset.style;
+    // --- Strategy dropdown ---
+    function renderStrategyDropdown() {
+      strategyDropdown.innerHTML = '';
+      for (const [key, cfg] of Object.entries(STRATEGIES)) {
+        const div = document.createElement('div');
+        div.className = 'strategy-option' + (key === state.style ? ' selected' : '');
+        div.dataset.value = key;
+        div.innerHTML = `<div class="so-name">${cfg.name}</div><div class="so-desc">${cfg.desc}</div>`;
+        div.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          selectStrategy(key);
+        });
+        strategyDropdown.appendChild(div);
+      }
+    }
 
-        if (state.style === 'dca') {
-          amountLabel.textContent = 'Monthly Amount';
-          amountHint.textContent = "Amount you'd invest each month";
-          amountInput.value = '500';
-          state.amount = 500;
-        } else if (state.style === 'lump') {
-          amountLabel.textContent = 'Initial Investment';
-          amountHint.textContent = 'One-time investment amount';
-          amountInput.value = '10000';
-          state.amount = 10000;
-        }
+    function selectStrategy(key) {
+      const cfg = STRATEGIES[key];
+      state.style = key;
+      strategyBtnText.textContent = cfg.name;
+      amountLabel.textContent = cfg.amountLabel;
+      amountHint.textContent = cfg.amountHint;
+      amountInput.value = cfg.defaultAmount.toLocaleString();
+      state.amount = cfg.defaultAmount;
 
-        updateResults();
+      // Close dropdown
+      strategyDropdown.classList.remove('open');
+      strategySelectBtn.classList.remove('open');
+
+      // Update selected state in dropdown
+      strategyDropdown.querySelectorAll('.strategy-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.value === key);
       });
-    });
 
-    // EMA custom dropdown handlers
-    emaSelectBtn.addEventListener('click', (e) => {
+      updateResults();
+    }
+
+    strategySelectBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const isOpen = emaDropdown.classList.contains('open');
-
+      const isOpen = strategyDropdown.classList.contains('open');
       if (isOpen) {
-        emaDropdown.classList.remove('open');
-        emaSelectBtn.classList.remove('open');
+        strategyDropdown.classList.remove('open');
+        strategySelectBtn.classList.remove('open');
       } else {
-        emaDropdown.classList.add('open');
-        emaSelectBtn.classList.add('open');
-        // Activate EMA mode when clicking
-        if (!emaSelectBtn.classList.contains('active')) {
-          styleBtns.forEach(b => b.classList.remove('active'));
-          emaSelectBtn.classList.add('active');
-          state.style = selectedEma;
-
-          const period = selectedEma.replace('ema', '');
-          amountLabel.textContent = 'Buy Amount per Signal';
-          amountHint.textContent = `Amount to invest each time price touches ${period} EMA`;
-          amountInput.value = '1000';
-          state.amount = 1000;
-          updateResults();
-        }
+        strategyDropdown.classList.add('open');
+        strategySelectBtn.classList.add('open');
       }
     });
 
-    emaOptions.forEach(opt => {
-      opt.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const value = opt.dataset.value;
-        selectedEma = value;
-
-        // Update selected state
-        emaOptions.forEach(o => o.classList.remove('selected'));
-        opt.classList.add('selected');
-
-        // Update button text
-        emaSelectBtn.textContent = opt.textContent;
-
-        // Close dropdown
-        emaDropdown.classList.remove('open');
-        emaSelectBtn.classList.remove('open');
-
-        // Activate and set state
-        styleBtns.forEach(b => b.classList.remove('active'));
-        emaSelectBtn.classList.add('active');
-        state.style = value;
-
-        const period = value.replace('ema', '');
-        amountLabel.textContent = 'Buy Amount per Signal';
-        amountHint.textContent = `Amount to invest each time price touches ${period} EMA`;
-        amountInput.value = '1000';
-        state.amount = 1000;
-
-        updateResults();
-      });
-    });
-
-    // Close EMA dropdown when clicking outside
+    // Close strategy dropdown on outside click
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('.ema-select-wrapper')) {
-        emaDropdown.classList.remove('open');
-        emaSelectBtn.classList.remove('open');
+      if (!e.target.closest('.strategy-select-wrapper')) {
+        strategyDropdown.classList.remove('open');
+        strategySelectBtn.classList.remove('open');
       }
     });
+
+    renderStrategyDropdown();
 
     amountInput.addEventListener('input', (e) => {
       const value = e.target.value.replace(/[^0-9]/g, '');
