@@ -873,7 +873,7 @@
         </div>
 
         <div class="result-item">
-          <div class="result-label">Total Return</div>
+          <div class="result-label">Annualized Return</div>
           <div class="result-value" id="total-return">0%</div>
         </div>
       </div>
@@ -2015,8 +2015,9 @@
       drawdownEl.className = 'result-value negative';
 
       const totalReturnEl = document.getElementById('total-return');
-      totalReturnEl.textContent = formatPercent(results.returnPercent);
-      totalReturnEl.className = `result-value ${results.returnPercent >= 0 ? 'positive' : 'negative'}`;
+      const annualizedReturn = results.returnPercent / state.years;
+      totalReturnEl.textContent = formatPercent(annualizedReturn) + '/yr';
+      totalReturnEl.className = `result-value ${annualizedReturn >= 0 ? 'positive' : 'negative'}`;
 
       updateChartLegend(results);
       drawChart(results);
