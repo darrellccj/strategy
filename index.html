@@ -14,6 +14,7 @@
     <div class="mode-tabs">
       <button class="mode-tab active" data-mode="simulate">Simulate</button>
       <button class="mode-tab" data-mode="optimize">Optimize</button>
+      <button class="mode-tab" data-mode="fire">FIRE</button>
     </div>
 
     <div class="main-layout" id="simulate-layout">
@@ -158,6 +159,109 @@
       <div id="optimize-results-container">
         <div class="optimize-empty">Click "Find Best Portfolios" to start</div>
       </div>
+    </div>
+    </div>
+
+    <!-- FIRE Mode -->
+    <div class="main-layout fire-layout" id="fire-layout" style="display:none;">
+    <div class="card">
+      <div class="input-group">
+        <label>Monthly Expenses</label>
+        <div class="amount-input-wrapper">
+          <span class="currency-symbol">$</span>
+          <input type="text" class="amount-input" id="fire-expenses" value="3000" inputmode="numeric">
+        </div>
+        <div class="amount-hint">Your total monthly living expenses</div>
+      </div>
+
+      <div class="fire-age-row">
+        <div class="input-group">
+          <label>Current Age</label>
+          <input type="text" class="fire-age-input" id="fire-current-age" value="30" inputmode="numeric">
+        </div>
+        <div class="input-group">
+          <label>FIRE Age</label>
+          <input type="text" class="fire-age-input" id="fire-target-age" value="45" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Current Portfolio Value</label>
+        <div class="amount-input-wrapper">
+          <span class="currency-symbol">$</span>
+          <input type="text" class="amount-input" id="fire-portfolio" value="50000" inputmode="numeric">
+        </div>
+        <div class="amount-hint">Total value of your current investments</div>
+      </div>
+
+      <div class="input-group">
+        <label>Current Monthly Contribution</label>
+        <div class="amount-input-wrapper">
+          <span class="currency-symbol">$</span>
+          <input type="text" class="amount-input" id="fire-contribution" value="1000" inputmode="numeric">
+        </div>
+        <div class="amount-hint">How much you currently invest each month</div>
+      </div>
+
+      <div class="fire-age-row">
+        <div class="input-group">
+          <label>Annual Inflation</label>
+          <div class="target-input-wrapper">
+            <input type="text" class="target-input" id="fire-inflation" value="3" inputmode="numeric">
+            <span class="target-suffix">%</span>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Nominal Annual Return</label>
+          <div class="target-input-wrapper">
+            <input type="text" class="target-input" id="fire-return" value="7" inputmode="numeric">
+            <span class="target-suffix">%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card results-card">
+      <div class="results-grid">
+        <div class="result-item full-width">
+          <div class="result-label">FIRE Number</div>
+          <div class="result-value positive" id="fire-number">$900,000</div>
+          <div class="result-subtext">Nest egg needed to retire (25x annual expenses)</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Annual Expenses at FIRE</div>
+          <div class="result-value" id="fire-annual">$36,000</div>
+          <div class="result-subtext" id="fire-annual-hint">Adjusted for inflation</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Safe Monthly Withdrawal</div>
+          <div class="result-value" id="fire-monthly-withdrawal">$3,000</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Years to FIRE</div>
+          <div class="result-value" id="fire-years">15</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Projected Portfolio at FIRE</div>
+          <div class="result-value" id="fire-projected">$0</div>
+          <div class="result-subtext" id="fire-projected-hint">With current contributions &amp; returns</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Shortfall</div>
+          <div class="result-value negative" id="fire-shortfall">$0</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Required Monthly Contribution</div>
+          <div class="result-value" id="fire-monthly-savings">$5,000</div>
+          <div class="result-subtext" id="fire-savings-hint">Total monthly contribution needed</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Additional Monthly Contribution</div>
+          <div class="result-value" id="fire-additional">$0</div>
+          <div class="result-subtext" id="fire-additional-hint">On top of your current contribution</div>
+        </div>
+      </div>
+      <div class="data-source">Based on the 4% rule: withdraw 4% of your nest egg per year to sustain retirement.</div>
     </div>
     </div>
   </div>

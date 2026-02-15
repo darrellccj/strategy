@@ -498,11 +498,118 @@ function switchMode(mode) {
   });
   document.getElementById('simulate-layout').style.display = mode === 'simulate' ? '' : 'none';
   document.getElementById('optimize-layout').style.display = mode === 'optimize' ? '' : 'none';
+  document.getElementById('fire-layout').style.display = mode === 'fire' ? '' : 'none';
 }
 
 document.querySelectorAll('.mode-tab').forEach(tab => {
   tab.addEventListener('click', () => switchMode(tab.dataset.mode));
 });
+
+// === FIRE MODE ===
+const fireExpensesInput = document.getElementById('fire-expenses');
+const fireCurrentAgeInput = document.getElementById('fire-current-age');
+const fireTargetAgeInput = document.getElementById('fire-target-age');
+const fireInflationInput = document.getElementById('fire-inflation');
+const fireReturnInput = document.getElementById('fire-return');
+const firePortfolioInput = document.getElementById('fire-portfolio');
+const fireContributionInput = document.getElementById('fire-contribution');
+const fireNumberEl = document.getElementById('fire-number');
+const fireAnnualEl = document.getElementById('fire-annual');
+const fireAnnualHintEl = document.getElementById('fire-annual-hint');
+const fireMonthlyWithdrawalEl = document.getElementById('fire-monthly-withdrawal');
+const fireYearsEl = document.getElementById('fire-years');
+const fireProjectedEl = document.getElementById('fire-projected');
+const fireProjectedHintEl = document.getElementById('fire-projected-hint');
+const fireShortfallEl = document.getElementById('fire-shortfall');
+const fireMonthlySavingsEl = document.getElementById('fire-monthly-savings');
+const fireSavingsHintEl = document.getElementById('fire-savings-hint');
+const fireAdditionalEl = document.getElementById('fire-additional');
+const fireAdditionalHintEl = document.getElementById('fire-additional-hint');
+
+// Future value of a lump sum: PV * (1 + r)^n
+// Future value of monthly contributions: PMT * [((1 + r)^n - 1) / r]  (r = monthly rate)
+function futureValue(presentValue, monthlyContribution, annualRate, years) {
+  if (years <= 0) return presentValue;
+  var months = years * 12;
+  var monthlyRate = annualRate / 12;
+  var fvLump = presentValue * Math.pow(1 + monthlyRate, months);
+  var fvContrib = monthlyRate > 0
+    ? monthlyContribution * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate)
+    : monthlyContribution * months;
+  return fvLump + fvContrib;
+}
+
+// Required monthly contribution to reach a target FV, given existing PV and rate
+function requiredMonthly(target, presentValue, annualRate, years) {
+  if (years <= 0) return 0;
+  var months = years * 12;
+  var monthlyRate = annualRate / 12;
+  var fvLump = presentValue * Math.pow(1 + monthlyRate, months);
+  var gap = target - fvLump;
+  if (gap <= 0) return 0;
+  if (monthlyRate > 0) {
+    return gap / ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+  }
+  return gap / months;
+}
+
+function updateFireCalculation() {
+  var monthly = parseFloat(fireExpensesInput.value.replace(/,/g, '')) || 0;
+  var currentAge = parseInt(fireCurrentAgeInput.value) || 0;
+  var fireAge = parseInt(fireTargetAgeInput.value) || 0;
+  var inflation = (parseFloat(fireInflationInput.value) || 0) / 100;
+  var nominalReturn = (parseFloat(fireReturnInput.value) || 0) / 100;
+  var currentPortfolio = parseFloat(firePortfolioInput.value.replace(/,/g, '')) || 0;
+  var currentContribution = parseFloat(fireContributionInput.value.replace(/,/g, '')) || 0;
+  var yearsToFire = Math.max(0, fireAge - currentAge);
+
+  var annualToday = monthly * 12;
+  var annualAtFire = annualToday * Math.pow(1 + inflation, yearsToFire);
+  var fireNumber = annualAtFire * 25;
+  var monthlyWithdrawal = annualAtFire / 12;
+
+  // Project current portfolio + current contributions forward at nominal return
+  var projected = futureValue(currentPortfolio, currentContribution, nominalReturn, yearsToFire);
+  var shortfall = Math.max(0, fireNumber - projected);
+
+  // Required total monthly contribution to reach FIRE number
+  var reqMonthly = requiredMonthly(fireNumber, currentPortfolio, nominalReturn, yearsToFire);
+  var additional = Math.max(0, reqMonthly - currentContribution);
+
+  fireAnnualEl.textContent = formatCurrency(annualAtFire);
+  fireAnnualHintEl.textContent = yearsToFire > 0 && inflation > 0
+    ? 'Today\'s ' + formatCurrency(annualToday) + ' adjusted for ' + yearsToFire + ' years of inflation'
+    : 'Adjusted for inflation';
+  fireNumberEl.textContent = formatCurrency(fireNumber);
+  fireMonthlyWithdrawalEl.textContent = formatCurrency(monthlyWithdrawal);
+  fireYearsEl.textContent = yearsToFire;
+
+  fireProjectedEl.textContent = formatCurrency(projected);
+  fireProjectedHintEl.textContent = 'With ' + formatCurrency(currentContribution) + '/mo at ' + (nominalReturn * 100).toFixed(1) + '% return';
+
+  fireShortfallEl.textContent = formatCurrency(shortfall);
+  fireShortfallEl.className = 'result-value' + (shortfall > 0 ? ' negative' : ' positive');
+
+  fireMonthlySavingsEl.textContent = formatCurrency(reqMonthly);
+  fireSavingsHintEl.textContent = yearsToFire > 0
+    ? 'Total monthly contribution needed at ' + (nominalReturn * 100).toFixed(1) + '% return'
+    : 'Set a FIRE age greater than your current age';
+
+  fireAdditionalEl.textContent = additional > 0 ? formatCurrency(additional) : '$0';
+  fireAdditionalEl.className = 'result-value' + (additional > 0 ? ' negative' : ' positive');
+  fireAdditionalHintEl.textContent = additional > 0
+    ? 'On top of your current ' + formatCurrency(currentContribution) + '/mo'
+    : 'You\'re on track with current contributions';
+}
+
+fireExpensesInput.addEventListener('input', updateFireCalculation);
+fireCurrentAgeInput.addEventListener('input', updateFireCalculation);
+fireTargetAgeInput.addEventListener('input', updateFireCalculation);
+fireInflationInput.addEventListener('input', updateFireCalculation);
+fireReturnInput.addEventListener('input', updateFireCalculation);
+firePortfolioInput.addEventListener('input', updateFireCalculation);
+fireContributionInput.addEventListener('input', updateFireCalculation);
+updateFireCalculation();
 
 // === OPTIMIZE MODE ===
 const optimizeTargetInput = document.getElementById('optimize-target');

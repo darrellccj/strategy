@@ -735,6 +735,10 @@ canvas {
     align-items: start;
   }
 
+  .main-layout.fire-layout {
+    grid-template-columns: 1fr 1.5fr;
+  }
+
   .card {
     padding: 32px;
     margin-bottom: 0;
@@ -789,7 +793,7 @@ canvas {
   background: #e5e0d5;
   border-radius: 10px;
   padding: 3px;
-  max-width: 300px;
+  max-width: 450px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -1053,6 +1057,34 @@ canvas {
   font-size: 0.8rem;
   font-weight: 500;
   color: #5c5340;
+}
+
+/* FIRE Age Inputs */
+.fire-age-row {
+  display: flex;
+  gap: 12px;
+}
+
+.fire-age-row .input-group {
+  flex: 1;
+}
+
+.fire-age-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e5e0d5;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  color: #3d3929;
+  background: #faf8f5;
+  font-family: inherit;
+  text-align: center;
+  transition: border-color 0.2s ease;
+}
+
+.fire-age-input:focus {
+  outline: none;
+  border-color: #a08c6d;
 }
 
 /* Large desktop */
