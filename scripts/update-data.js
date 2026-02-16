@@ -103,17 +103,20 @@ async function fetchFundamentals(symbols) {
       break;
     }
     try {
-      const url = `https://financialmodelingprep.com/api/v3/key-metrics-ttm/${symbol}?apikey=${apiKey}`;
+      const url = `https://financialmodelingprep.com/stable/key-metrics?symbol=${symbol}&period=annual&limit=1&apikey=${apiKey}`;
       const res = await fetch(url);
       if (!res.ok) continue;
       const data = await res.json();
       callCount++;
       if (data && data[0]) {
-        fundamentals[symbol] = {
-          earningsYield: data[0].earningsYieldTTM || 0,
-          returnOnCapital: data[0].roicTTM || 0,
-          marketCap: data[0].marketCapTTM || 0,
-        };
+        const d = data[0];
+        // Earnings Yield = 1 / PE ratio (or use earningsYield if available)
+        const earningsYield = d.earningsYield || (d.peRatio ? 1 / d.peRatio : 0);
+        const returnOnCapital = d.returnOnInvestedCapital || d.roic || 0;
+        const marketCap = d.marketCap || 0;
+        if (earningsYield !== 0 || returnOnCapital !== 0) {
+          fundamentals[symbol] = { earningsYield, returnOnCapital, marketCap };
+        }
       }
       await sleep(300);
     } catch {
