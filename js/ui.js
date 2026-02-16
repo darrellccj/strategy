@@ -308,15 +308,30 @@ function updateChartLegend(results) {
 }
 
 // --- Ticker search dropdown ---
+const MAX_DROPDOWN_RESULTS = 30;
+let searchDebounceTimer = null;
+
 function renderDropdown(filter) {
+  if (!tickerIndexLoaded && TICKERS.length === 0) {
+    tickerDropdown.innerHTML = '<div class="ticker-option"><span class="ticker-name">Loading tickers...</span></div>';
+    tickerDropdown.classList.add('open');
+    tickerSearch.classList.add('has-focus');
+    return;
+  }
+
   const query = filter.toLowerCase();
-  const matches = TICKERS.filter(t =>
-    t.symbol.toLowerCase().includes(query) ||
-    t.name.toLowerCase().includes(query)
-  );
+  const matches = query === ''
+    ? TICKERS.slice(0, MAX_DROPDOWN_RESULTS)
+    : TICKERS.filter(t =>
+        t.symbol.toLowerCase().includes(query) ||
+        t.name.toLowerCase().includes(query)
+      );
+
+  const totalMatches = matches.length;
+  const visible = matches.slice(0, MAX_DROPDOWN_RESULTS);
 
   tickerDropdown.innerHTML = '';
-  matches.forEach(t => {
+  visible.forEach(t => {
     const div = document.createElement('div');
     div.className = 'ticker-option';
     const inPortfolio = state.portfolio.some(e => e.symbol === t.symbol);
@@ -328,7 +343,14 @@ function renderDropdown(filter) {
     tickerDropdown.appendChild(div);
   });
 
-  if (matches.length > 0) {
+  if (totalMatches > MAX_DROPDOWN_RESULTS) {
+    const hint = document.createElement('div');
+    hint.className = 'ticker-option ticker-more-hint';
+    hint.innerHTML = `<span class="ticker-name">...and ${totalMatches - MAX_DROPDOWN_RESULTS} more. Type to narrow results.</span>`;
+    tickerDropdown.appendChild(hint);
+  }
+
+  if (visible.length > 0) {
     tickerDropdown.classList.add('open');
     tickerSearch.classList.add('has-focus');
   } else {
@@ -360,7 +382,10 @@ tickerSearch.addEventListener('focus', () => {
 tickerSearch.addEventListener('input', () => {
   pendingTicker = null;
   addTickerBtn.disabled = true;
-  renderDropdown(tickerSearch.value);
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    renderDropdown(tickerSearch.value);
+  }, 150);
 });
 
 tickerSearch.addEventListener('blur', () => {
@@ -499,6 +524,10 @@ function switchMode(mode) {
   document.getElementById('simulate-layout').style.display = mode === 'simulate' ? '' : 'none';
   document.getElementById('optimize-layout').style.display = mode === 'optimize' ? '' : 'none';
   document.getElementById('fire-layout').style.display = mode === 'fire' ? '' : 'none';
+  document.getElementById('magic-layout').style.display = mode === 'magic' ? '' : 'none';
+  if (mode === 'magic' && typeof renderMagicFormulaTab === 'function') {
+    renderMagicFormulaTab();
+  }
 }
 
 document.querySelectorAll('.mode-tab').forEach(tab => {
@@ -646,6 +675,37 @@ document.querySelectorAll('.complexity-btn').forEach(btn => {
 
 let optimizeRunning = false;
 
+// Pool selector
+const poolBtns = document.querySelectorAll('.pool-btn');
+poolBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    poolBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.optimizePool = btn.dataset.pool;
+  });
+});
+
+function getOptimizerPool() {
+  if (state.optimizePool === 'portfolio') {
+    return state.portfolio.map(e => {
+      const t = TICKERS.find(ti => ti.symbol === e.symbol);
+      return t || { symbol: e.symbol, yahoo: e.yahoo, name: e.name, sector: '' };
+    });
+  }
+  if (state.optimizePool === 'all') {
+    return TICKERS;
+  }
+  // Magic Formula pools
+  if (typeof getMagicFormulaTop === 'function') {
+    const n = parseInt(state.optimizePool.replace('magic', ''));
+    if (n > 0) {
+      const topSymbols = getMagicFormulaTop(n);
+      return topSymbols.map(s => TICKERS.find(t => t.symbol === s)).filter(Boolean);
+    }
+  }
+  return TICKERS;
+}
+
 runOptimizeBtn.addEventListener('click', async () => {
   if (optimizeRunning) return;
   optimizeRunning = true;
@@ -655,6 +715,7 @@ runOptimizeBtn.addEventListener('click', async () => {
   optimizeResultsContainer.innerHTML = '<div class="optimize-empty">Searching...</div>';
 
   try {
+    const pool = getOptimizerPool();
     const results = await runOptimization(
       state.optimizeTargetReturn,
       state.optimizeYears,
@@ -668,7 +729,8 @@ runOptimizeBtn.addEventListener('click', async () => {
           optimizeStatusText.textContent = `Testing portfolio ${tested} of ${total} (${pct}%)`;
           optimizeProgressFill.style.width = pct + '%';
         }
-      }
+      },
+      pool
     );
     renderOptimizeResults(results, state.optimizeTargetReturn);
   } catch (e) {
@@ -682,6 +744,25 @@ runOptimizeBtn.addEventListener('click', async () => {
   optimizeProgressFill.style.width = '0%';
 });
 
+// === MAGIC FORMULA FILTERS ===
+const magicSectorFilter = document.getElementById('magic-sector-filter');
+const magicCapFilter = document.getElementById('magic-cap-filter');
+if (magicSectorFilter) {
+  magicSectorFilter.addEventListener('change', () => renderMagicFormulaTab());
+}
+if (magicCapFilter) {
+  magicCapFilter.addEventListener('change', () => renderMagicFormulaTab());
+}
+
 // Initial load
 renderPortfolioList();
-loadPortfolioData();
+
+// Load ticker index + meta + Magic Formula, then portfolio data
+(async function init() {
+  await Promise.all([
+    loadTickerIndex(),
+    loadMetaData(),
+    loadMagicFormula()
+  ]);
+  await loadPortfolioData();
+})();

@@ -36,18 +36,15 @@ function backtestSingleWithParams(tickerData, amount, strategy, years) {
   }
 }
 
-async function ensureAllTickersLoaded() {
-  if (!bundledDataLoaded) {
-    if (!bundledDataPromise) bundledDataPromise = loadBundledData();
-    await bundledDataPromise;
-  }
-  if (!dailyDataLoaded) {
-    if (!dailyDataPromise) dailyDataPromise = loadDailyData();
-    await dailyDataPromise;
-  }
-  const missing = TICKERS.filter(t => !dataCache[t.yahoo] || !dataCache[t.yahoo].dailyData || dataCache[t.yahoo].dailyData.length === 0);
+async function ensureTickersLoaded(tickerPool) {
+  const pool = tickerPool || TICKERS;
+  const missing = pool.filter(t => !dataCache[t.yahoo] || !dataCache[t.yahoo].dailyData || dataCache[t.yahoo].dailyData.length === 0);
   if (missing.length > 0) {
-    await Promise.all(missing.map(t => fetchStockData(t.yahoo)));
+    // Load in batches of 10 to avoid overwhelming the browser
+    for (let i = 0; i < missing.length; i += 10) {
+      const batch = missing.slice(i, i + 10);
+      await Promise.all(batch.map(t => fetchStockData(t.yahoo)));
+    }
   }
 }
 
@@ -77,8 +74,9 @@ function computeRiskFromValues(values, len) {
   return { maxDrawdown, volatility };
 }
 
-async function runOptimization(targetReturn, years, complexity, progressCallback) {
-  await ensureAllTickersLoaded();
+async function runOptimization(targetReturn, years, complexity, progressCallback, tickerPool) {
+  const pool = tickerPool || TICKERS;
+  await ensureTickersLoaded(pool);
 
   const strategyKeys = Object.keys(STRATEGIES);
   const defaultAmount = 1000;
@@ -89,7 +87,7 @@ async function runOptimization(targetReturn, years, complexity, progressCallback
   const btCache = {};
   const validTickers = [];
 
-  for (const t of TICKERS) {
+  for (const t of pool) {
     const tickerData = dataCache[t.yahoo];
     if (!tickerData || !tickerData.dailyData || tickerData.dailyData.length === 0) continue;
     btCache[t.yahoo] = {};

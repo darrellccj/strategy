@@ -15,6 +15,7 @@
       <button class="mode-tab active" data-mode="simulate">Simulate</button>
       <button class="mode-tab" data-mode="optimize">Optimize</button>
       <button class="mode-tab" data-mode="fire">FIRE</button>
+      <button class="mode-tab" data-mode="magic">Magic Formula</button>
     </div>
 
     <div class="main-layout" id="simulate-layout">
@@ -145,6 +146,17 @@
         </div>
       </div>
 
+      <div class="input-group">
+        <label>Ticker Pool</label>
+        <div class="pool-btns">
+          <button class="pool-btn active" data-pool="portfolio">Portfolio</button>
+          <button class="pool-btn" data-pool="all">All Tickers</button>
+          <button class="pool-btn" data-pool="magic10">MF Top 10</button>
+          <button class="pool-btn" data-pool="magic20">MF Top 20</button>
+          <button class="pool-btn" data-pool="magic30">MF Top 30</button>
+        </div>
+      </div>
+
       <button class="run-optimize-btn" id="run-optimize-btn">Find Best Portfolios</button>
 
       <div class="optimize-status" id="optimize-status">
@@ -264,6 +276,40 @@
       <div class="data-source">Based on the 4% rule: withdraw 4% of your nest egg per year to sustain retirement.</div>
     </div>
     </div>
+
+    <!-- Magic Formula Mode -->
+    <div class="main-layout magic-layout" id="magic-layout" style="display:none;">
+    <div class="card">
+      <div class="input-group">
+        <label>Sector Filter</label>
+        <select class="magic-filter-select" id="magic-sector-filter">
+          <option value="all">All Sectors</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Market Cap</label>
+        <select class="magic-filter-select" id="magic-cap-filter">
+          <option value="all">All Sizes</option>
+          <option value="large">Large Cap ($10B+)</option>
+          <option value="mid">Mid Cap ($2B-$10B)</option>
+          <option value="small">Small Cap (&lt;$2B)</option>
+        </select>
+      </div>
+
+      <div class="magic-actions">
+        <button class="magic-action-btn" onclick="addMagicFormulaToPortfolio(10)">Add Top 10 to Portfolio</button>
+        <button class="magic-action-btn" onclick="addMagicFormulaToPortfolio(20)">Add Top 20 to Portfolio</button>
+        <button class="magic-action-btn secondary" onclick="useMagicFormulaInOptimizer(20)">Use Top 20 in Optimizer</button>
+      </div>
+    </div>
+
+    <div class="card results-card">
+      <div id="magic-results-container">
+        <div class="magic-empty">Loading Magic Formula rankings...</div>
+      </div>
+    </div>
+    </div>
   </div>
 
   <script src="js/config.js"></script>
@@ -273,6 +319,7 @@
   <script src="js/backtest.js"></script>
   <script src="js/chart.js"></script>
   <script src="js/optimize.js"></script>
+  <script src="js/magic.js"></script>
   <script src="js/ui.js"></script>
 </body>
 </html>

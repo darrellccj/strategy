@@ -1087,6 +1087,187 @@ canvas {
   border-color: #a08c6d;
 }
 
+/* Pool Buttons (Optimizer) */
+.pool-btns {
+  display: flex;
+  gap: 0;
+  background: #e5e0d5;
+  border-radius: 10px;
+  padding: 3px;
+  flex-wrap: wrap;
+}
+
+.pool-btn {
+  flex: 1;
+  padding: 6px 6px;
+  border: none;
+  background: transparent;
+  color: #6b5f4d;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.pool-btn.active {
+  background: #a08c6d;
+  color: #ffffff;
+}
+
+.pool-btn:hover:not(.active) {
+  background: rgba(160, 140, 109, 0.2);
+}
+
+/* Ticker dropdown hint */
+.ticker-more-hint {
+  text-align: center;
+  cursor: default;
+  font-style: italic;
+}
+
+.ticker-more-hint:hover {
+  background: transparent;
+}
+
+/* Magic Formula Tab */
+.magic-layout {
+  grid-template-columns: 1fr 2fr;
+}
+
+.magic-filter-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e0d5;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #3d3929;
+  background: #faf8f5;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.magic-filter-select:focus {
+  outline: none;
+  border-color: #a08c6d;
+}
+
+.magic-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.magic-action-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: #5a7a5a;
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.magic-action-btn:hover {
+  background: #4a6a4a;
+}
+
+.magic-action-btn.secondary {
+  background: #a08c6d;
+}
+
+.magic-action-btn.secondary:hover {
+  background: #8a7760;
+}
+
+.magic-empty, .magic-loading {
+  text-align: center;
+  color: #9a8d79;
+  font-size: 0.9rem;
+  padding: 32px 16px;
+}
+
+.magic-updated {
+  font-size: 0.75rem;
+  color: #9a8d79;
+  text-align: right;
+  margin-bottom: 8px;
+}
+
+.magic-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.magic-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.magic-table th {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 2px solid #e5e0d5;
+  color: #6b5f4d;
+  font-weight: 600;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.magic-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f0ebe2;
+  color: #3d3929;
+}
+
+.magic-table tbody tr:hover {
+  background: #faf8f5;
+}
+
+.magic-rank {
+  font-weight: 600;
+  color: #a08c6d;
+  width: 40px;
+}
+
+.magic-symbol {
+  font-weight: 600;
+  color: #5c5340;
+}
+
+.magic-name {
+  color: #6b5f4d;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.magic-sector {
+  color: #9a8d79;
+  font-size: 0.8rem;
+}
+
+.magic-ey, .magic-roc {
+  color: #5a7a5a;
+  font-weight: 500;
+}
+
+.magic-combined {
+  font-weight: 600;
+  color: #5c5340;
+}
+
 /* Large desktop */
 @media (min-width: 1024px) {
   .main-layout {
@@ -1100,5 +1281,24 @@ canvas {
 
   .result-item {
     padding: 20px;
+  }
+}
+
+/* Mobile: Magic Formula */
+@media (max-width: 767px) {
+  .magic-layout {
+    display: block;
+  }
+
+  .magic-table {
+    font-size: 0.75rem;
+  }
+
+  .magic-table th, .magic-table td {
+    padding: 6px 6px;
+  }
+
+  .magic-name, .magic-sector {
+    display: none;
   }
 }
